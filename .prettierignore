@@ -1,0 +1,5 @@
+dist
+node_modules
+package-lock.json
+PROJECT.md
+CLAUDE.md
