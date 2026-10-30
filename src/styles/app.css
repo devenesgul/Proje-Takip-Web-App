@@ -1,0 +1,894 @@
+/* Uygulama düzeni ve bileşen stilleri. Renkler yalnızca tokens.css değişkenlerinden gelir. */
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Düğmeler --- */
+.button {
+  font: inherit;
+  padding: var(--space-1) var(--space-3);
+  min-height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--color-surface-alt);
+}
+
+.button.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.icon-button {
+  font: inherit;
+  min-width: 28px;
+  min-height: 28px;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.icon-button.danger:hover {
+  color: var(--color-danger);
+}
+
+.link-button {
+  font: inherit;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* --- Üst bar --- */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4);
+}
+
+.top-bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.top-bar-row + .top-bar-row {
+  margin-top: var(--space-2);
+}
+
+.project-title {
+  margin: 0;
+  font-size: 1.25rem;
+  flex: 1 1 auto;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.save-status {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.save-error {
+  color: var(--color-danger);
+}
+
+.overall-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.overall-label {
+  color: var(--color-text-muted);
+}
+
+.overall .progress {
+  flex: 1 1 200px;
+  max-width: 480px;
+}
+
+.weight-ok {
+  color: var(--color-success);
+}
+
+.weight-warning {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius);
+}
+
+/* --- Bildirim --- */
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-3) var(--space-4) 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-surface-alt);
+}
+
+.notice-error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* --- İlerleme çubuğu --- */
+.progress {
+  display: inline-block;
+  position: relative;
+  height: 8px;
+  width: 80px;
+  border-radius: 4px;
+  background: var(--color-track);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.progress-large {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--color-primary);
+}
+
+/* --- Ağaç tablo --- */
+/* --- Çalışma alanı: tablo + Gantt yan yana --- */
+.workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.workspace-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.segmented {
+  display: inline-flex;
+}
+
+.segmented .button {
+  border-radius: 0;
+}
+
+.segmented .button:first-child {
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.segmented .button:last-child {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.segmented .button + .button {
+  border-left: none;
+}
+
+.segmented .button[aria-pressed='true'] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Her iki bölme de yatay kaydırma çubuğu yerini ayırır; böylece dikey kaydırma sınırları eşit kalır. */
+.pane {
+  min-height: 0;
+  overflow-x: scroll;
+  overflow-y: auto;
+}
+
+/* Tablo doğal genişliğini alır; ekran darsa küçülüp yatay kayar. Gantt kalan alanı kullanır. */
+.table-pane {
+  flex: 0 1 auto;
+  border-right: 2px solid var(--color-border);
+}
+
+.gantt-pane {
+  flex: 1 1 0;
+  min-width: 400px;
+}
+
+/* Uzun adlar kısaltılır; tam ad düğmenin ipucunda ve düzenleme kutusunda görünür. */
+.col-name .cell-button {
+  max-width: 220px;
+}
+
+.tree-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tree-table th,
+.tree-table td {
+  height: var(--row-height);
+  box-sizing: border-box;
+  padding: 0 var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tree-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: var(--gantt-header-height);
+  vertical-align: bottom;
+  padding-bottom: var(--space-1);
+  background: var(--color-surface-alt);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.col-name {
+  min-width: 220px;
+}
+
+.col-num {
+  text-align: right;
+  min-width: 80px;
+}
+
+.tree-table td.col-num {
+  text-align: right;
+}
+
+.col-date {
+  min-width: 130px;
+}
+
+.col-progress {
+  min-width: 110px;
+}
+
+.col-progress .progress {
+  width: 44px;
+}
+
+.col-progress .progress {
+  margin-right: var(--space-2);
+}
+
+.col-actions {
+  text-align: right;
+}
+
+.group-row td {
+  background: var(--color-surface-alt);
+  font-weight: 600;
+}
+
+.group-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.group-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--group-color);
+  flex: none;
+}
+
+.item-name {
+  padding-left: 44px !important;
+}
+
+.empty-row td {
+  color: var(--color-text-muted);
+  padding-left: 44px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px var(--space-4);
+  color: var(--color-text-muted);
+}
+
+/* --- Satır içi düzenleme --- */
+.cell-button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 2px var(--space-1);
+  text-align: inherit;
+  cursor: text;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-button:hover {
+  border-color: var(--color-border);
+}
+
+.cell-placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.cell-editor {
+  position: relative;
+  display: inline-block;
+}
+
+.cell-input {
+  font: inherit;
+  padding: 2px var(--space-1);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  max-width: 100%;
+}
+
+.cell-input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.cell-error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  margin-top: 2px;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius);
+  background: var(--color-danger);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.col-num .cell-input,
+.col-progress .cell-input {
+  width: 64px;
+  text-align: right;
+}
+
+/* --- Modal --- */
+.modal {
+  width: min(640px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.modal::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+
+.modal-header,
+.modal-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.modal-header {
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.modal-footer {
+  justify-content: flex-end;
+  border-top: 1px solid var(--color-border);
+}
+
+.modal-body {
+  padding: var(--space-4);
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.modal-body h3 {
+  font-size: 0.95rem;
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.modal input {
+  font: inherit;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  min-width: 0;
+}
+
+.form-grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.form-grid label:first-child {
+  grid-column: 1 / -1;
+}
+
+.form-error {
+  color: var(--color-danger);
+  margin-right: auto;
+}
+
+.info-list {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 2fr 3fr auto;
+  gap: var(--space-2);
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .info-row input:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- Gecikme --- */
+.badge {
+  display: inline-block;
+  margin-left: var(--space-1);
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.badge-delayed {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.is-delayed .item-name .cell-button {
+  color: var(--color-danger);
+}
+
+/* --- Gantt --- */
+.gantt-inner {
+  position: relative;
+  min-height: 100%;
+}
+
+.gantt-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: var(--gantt-header-height);
+  background: var(--color-surface-alt);
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.gantt-header-row {
+  position: relative;
+  height: var(--gantt-header-row);
+}
+
+.gantt-segment {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 var(--space-1);
+  border-left: 1px solid var(--color-border);
+  font-size: 0.72rem;
+  line-height: var(--gantt-header-row);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.gantt-markers {
+  font-size: 0.7rem;
+  line-height: var(--gantt-header-row);
+}
+
+.gantt-flag {
+  position: absolute;
+  top: 1px;
+  transform: translateX(-50%);
+  padding: 0 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  color: #ffffff;
+  line-height: calc(var(--gantt-header-row) - 2px);
+}
+
+.gantt-flag-project {
+  background: var(--color-project-marker);
+}
+
+.gantt-flag-today {
+  background: var(--color-today);
+  z-index: 1;
+}
+
+.gantt-body {
+  position: relative;
+}
+
+.gantt-row {
+  position: relative;
+  height: var(--row-height);
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.gantt-row-group {
+  background: color-mix(in srgb, var(--color-surface-alt) 60%, transparent);
+}
+
+.gantt-gridline,
+.gantt-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+.gantt-gridline {
+  border-left: 1px solid var(--color-border);
+  opacity: 0.6;
+}
+
+.gantt-line-project {
+  border-left: 2px dashed var(--color-project-marker);
+  z-index: 1;
+}
+
+.gantt-line-today {
+  border-left: 2px solid var(--color-today);
+  z-index: 1;
+}
+
+.gantt-bar {
+  --bar-color: var(--status-not-started);
+  position: absolute;
+  top: 9px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 1px solid var(--bar-color);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--bar-color) 22%, var(--color-surface));
+  overflow: hidden;
+}
+
+.gantt-bar-fill {
+  height: 100%;
+  background: var(--bar-color);
+}
+
+.gantt-bar-label {
+  position: absolute;
+  inset: 0;
+  padding: 0 4px;
+  font-size: 0.7rem;
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-shadow: 0 0 2px var(--color-surface);
+  white-space: nowrap;
+}
+
+.gantt-bar.group-bar {
+  top: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.gantt-bar.group-bar .gantt-bar-label {
+  display: none;
+}
+
+.status-notStarted {
+  --bar-color: var(--status-not-started);
+}
+
+.status-inProgress {
+  --bar-color: var(--status-in-progress);
+}
+
+.status-done {
+  --bar-color: var(--status-done);
+}
+
+.status-delayed {
+  --bar-color: var(--status-delayed);
+}
+
+.status-onHold {
+  --bar-color: var(--status-on-hold);
+}
+
+/* --- Özel sütun hücreleri --- */
+.col-custom {
+  min-width: 110px;
+}
+
+.col-custom-checkbox {
+  min-width: 70px;
+  text-align: center;
+}
+
+.tree-table td.col-custom-checkbox {
+  text-align: center;
+}
+
+.tree-table td.col-custom-number .cell-button {
+  display: block;
+  margin-left: auto;
+}
+
+.col-custom .cell-button {
+  max-width: 200px;
+}
+
+.custom-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.custom-select {
+  --option-color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  max-width: 180px;
+  padding: 1px var(--space-1);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.custom-select:hover {
+  border-color: var(--color-border);
+}
+
+.custom-select.has-value {
+  background: color-mix(in srgb, var(--option-color) 18%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--option-color) 45%, transparent);
+  color: var(--color-text);
+}
+
+.link-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  max-width: 220px;
+}
+
+.link-cell a {
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Sütun yöneticisi --- */
+.muted {
+  color: var(--color-text-muted);
+}
+
+.modal select {
+  font: inherit;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.column-add,
+.option-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.column-add {
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.column-add > input {
+  flex: 1 1 180px;
+}
+
+.column-list,
+.options-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.column-row {
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.column-row-main,
+.option-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.name-input {
+  display: inline-flex;
+  flex-direction: column;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.column-visible {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+}
+
+.icon-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.options-editor {
+  margin: var(--space-2) 0 0 var(--space-4);
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--color-border);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.option-row input[type='color'] {
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.option-uses {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.modal input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+/* Ad sütunu yatay kaydırmada solda sabit kalır (çok sütunlu tabloda satırın ne olduğu görünsün). */
+.tree-table .col-name {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+  box-shadow: inset -1px 0 0 var(--color-border);
+}
+
+.tree-table th.col-name {
+  z-index: 3;
+  background: var(--color-surface-alt);
+}
+
+.tree-table .group-row td.col-name {
+  background: var(--color-surface-alt);
+}

@@ -550,13 +550,13 @@ Kurulum   İskelet    Gantt &    Özelleştir  Panel &    Cila &     İleri
 
 - [x] Yeni proje klasörü oluştur, Git başlat (`git init`)
 - [x] Bu belgeyi `PROJECT.md` ve `CLAUDE.md` olarak koy
-- [ ] Teknoloji yığınını onayla (Bölüm 6)
+- [x] Teknoloji yığınını onayla (Bölüm 6)
 - [x] Vite + React + TypeScript iskeletini kur
 - [x] ESLint, Prettier, Vitest kur
 - [x] Klasör yapısını oluştur (Bölüm 7.2)
 - [x] `types/index.ts` içine veri modeli tiplerini yaz
 - [x] `data/sampleProject.ts` içine örnek proje verisini hazırla (PDF'ten esinli, ağırlıklar toplamı = 100)
-- [ ] GitHub'a push et (yedek ve ileride yayın için)
+- [x] GitHub'a push et (yedek ve ileride yayın için)
 
 **Çıktı:** Boş ama çalışan uygulama (`npm run dev`), tipler hazır, örnek veri hazır.
 
@@ -565,16 +565,16 @@ Kurulum   İskelet    Gantt &    Özelleştir  Panel &    Cila &     İleri
 ### AŞAMA 1: İskelet ve Temel Tablo
 **Amaç:** Veri girebildiğim, kaydedilen, kaybolmayan tablo.
 
-- [ ] Zustand store: proje durumu, aksiyonlar (ekle/sil/güncelle grup ve kalem)
-- [ ] Otomatik kayıt (IndexedDB/localStorage) ve açılışta yükleme
-- [ ] JSON dışa aktar / içe aktar (doğrulama ile)
-- [ ] Ağaç tablo: grup satırı (aç/kapat) + kalem satırları
-- [ ] Satır içi düzenleme: ad, ağırlık, başlangıç, bitiş, tamamlanma
-- [ ] Kalem/grup ekleme, silme (onay ile), kopyalama
-- [ ] Proje künyesi düzenleme modalı
-- [ ] Temel stil, açık/koyu tema altyapısı (CSS değişkenleri)
-- [ ] Domain: `progress.ts` (genel ilerleme, grup ilerleme, ağırlık toplamı) **+ birim testleri**
-- [ ] Üstte genel ilerleme çubuğu ve ağırlık uyarısı
+- [x] Zustand store: proje durumu, aksiyonlar (ekle/sil/güncelle grup ve kalem)
+- [x] Otomatik kayıt (IndexedDB/localStorage) ve açılışta yükleme
+- [x] JSON dışa aktar / içe aktar (doğrulama ile)
+- [x] Ağaç tablo: grup satırı (aç/kapat) + kalem satırları
+- [x] Satır içi düzenleme: ad, ağırlık, başlangıç, bitiş, tamamlanma
+- [x] Kalem/grup ekleme, silme (onay ile), kopyalama
+- [x] Proje künyesi düzenleme modalı
+- [x] Temel stil, açık/koyu tema altyapısı (CSS değişkenleri)
+- [x] Domain: `progress.ts` (genel ilerleme, grup ilerleme, ağırlık toplamı) **+ birim testleri**
+- [x] Üstte genel ilerleme çubuğu ve ağırlık uyarısı
 
 **Çıktı:** Tabloyu doldurup sayfayı yenilesem veri duruyor; JSON yedeği alıp geri yükleyebiliyorum.
 
@@ -583,15 +583,15 @@ Kurulum   İskelet    Gantt &    Özelleştir  Panel &    Cila &     İleri
 ### AŞAMA 2: Gantt ve İlerleme Hesabı
 **Amaç:** PDF'teki çizelgenin canlı hali.
 
-- [ ] Gantt bileşeni: zaman ekseni (yıl/ay/hafta başlıkları)
-- [ ] Çubuklar: planlanan başlangıç–bitiş
-- [ ] Çubuğun içinde tamamlanma dolgusu
-- [ ] "Bugün" dikey çizgisi
-- [ ] Zoom: Gün / Hafta / Ay
-- [ ] Tablo ile Gantt satır hizalaması ve senkron kaydırma
-- [ ] Domain: `schedule.ts` (gecikme, kalan gün, durum önerisi) **+ testler**
-- [ ] Gecikenleri kırmızı gösterme
-- [ ] Proje başlangıç/bitiş işaretleri (PDF'teki "işe başlama/bitim" bayrakları)
+- [x] Gantt bileşeni: zaman ekseni (yıl/ay/hafta başlıkları)
+- [x] Çubuklar: planlanan başlangıç–bitiş
+- [x] Çubuğun içinde tamamlanma dolgusu
+- [x] "Bugün" dikey çizgisi
+- [x] Zoom: Gün / Hafta / Ay
+- [x] Tablo ile Gantt satır hizalaması ve senkron kaydırma
+- [x] Domain: `schedule.ts` (gecikme, kalan gün, durum önerisi) **+ testler**
+- [x] Gecikenleri kırmızı gösterme
+- [x] Proje başlangıç/bitiş işaretleri (PDF'teki "işe başlama/bitim" bayrakları)
 
 **Çıktı:** Kalemleri girince çubuklar çıkıyor, geciken işler kırmızı, genel ilerleme otomatik.
 
@@ -603,13 +603,13 @@ Kurulum   İskelet    Gantt &    Özelleştir  Panel &    Cila &     İleri
 - [ ] Tarih **+ saat** seçici (başlangıç/bitiş)
 - [ ] Kalem detay paneli (yandan açılır)
 - [ ] Not alanı (satırda ikon, panelde uzun metin)
-- [ ] **Sütun yöneticisi:** ekle, sil, yeniden adlandır, tip seç, sırala, gizle/göster
-- [ ] Özel sütun hücre editörleri (metin, sayı, tarih, seçim, onay, bağlantı)
-- [ ] Seçim tipi sütunlarda renkli etiketler
+- [x] **Sütun yöneticisi:** ekle, sil, yeniden adlandır, tip seç, sırala, gizle/göster
+- [x] Özel sütun hücre editörleri (metin, sayı, tarih, seçim, onay, bağlantı)
+- [x] Seçim tipi sütunlarda renkli etiketler
 - [ ] Durum etiketleri ve renkleri, elle durum seçme (`durumElle`)
 - [ ] Planlanan vs. gerçekleşen çubuk (iki katman)
-- [ ] Sütun silinirken veri kaybı uyarısı
-- [ ] Domain: `columns.ts` + testler
+- [x] Sütun silinirken veri kaybı uyarısı
+- [x] Domain: `columns.ts` + testler
 
 **Çıktı:** Yeni sütun ekleyip değer girebiliyorum, not alabiliyorum, saat girebiliyorum.
 
@@ -685,9 +685,9 @@ Bir özellik, aşağıdaki maddeler sağlanınca "bitti" sayılır.
 - [ ] Silme işlemleri onay ister veya geri alınabilir
 
 ### 10.4 Özel sütunlar
-- [ ] Sütun ekleyince tüm mevcut satırlarda boş hücre görünür
-- [ ] Sütun silince uyarı çıkar, JSON'da da kaldırılır
-- [ ] Sütun sırası ve görünürlüğü yenilemeden sonra korunur
+- [x] Sütun ekleyince tüm mevcut satırlarda boş hücre görünür
+- [x] Sütun silince uyarı çıkar, JSON'da da kaldırılır
+- [x] Sütun sırası ve görünürlüğü yenilemeden sonra korunur
 
 ### 10.5 Hızlı okuma testi
 - [ ] Uygulamayı ilk kez açan biri **5 saniyede** genel ilerlemeyi, geciken iş sayısını ve kalan günü bulabilir
@@ -857,11 +857,11 @@ Aşama 0'da cevaplanacak ve buraya işlenecek.
 |---|---|---|---|
 | 1 | Teknoloji: React+TS mi, Vanilla JS mi? | React + TypeScript | ✔ React 19 + TypeScript 6.0 (strict), Vite 8. TS 7'ye typescript-eslint desteği gelince geçilir |
 | 2 | Kod içi adlandırma: İngilizce mi Türkçe mi? | İngilizce kod, Türkçe arayüz | ✔ İngilizce kod (`Item`, `weight`, `planned.start`), Türkçe arayüz ve yorumlar |
-| 3 | Veri saklama: localStorage mı IndexedDB mi? | IndexedDB | ☐ |
-| 4 | Stil: Tailwind mi düz CSS mi? | Tailwind | ☐ |
+| 3 | Veri saklama: localStorage mı IndexedDB mi? | IndexedDB | ✔ IndexedDB (`idb-keyval`); okunamayan kayıt silinmez, ayrı anahtara yedeklenir |
+| 4 | Stil: Tailwind mi düz CSS mi? | Tailwind | ✔ Düz CSS + CSS değişkenleri (`tokens.css`, `app.css`); ek bağımlılık yok |
 | 5 | Yeni projenin türü ve gerçek iş kalemleri nedir? | (kullanıcı verecek) | ☐ |
 | 6 | Sadece kullanıcı mı kullanacak, paylaşım gerekecek mi? | Sadece kullanıcı | ☐ |
-| 7 | Gantt granülaritesi: Gün bazlı mı, PDF'teki gibi hafta bazlı mı? | Gün/Hafta/Ay geçişli | ☐ |
+| 7 | Gantt granülaritesi: Gün bazlı mı, PDF'teki gibi hafta bazlı mı? | Gün/Hafta/Ay geçişli | ✔ Gün/Hafta/Ay geçişli (ayar projeyle saklanır). Tarih hesapları date-fns olmadan, takvim günü üzerinden (`utils/date.ts`) |
 | 8 | Ağırlık modeli: mutlak (PDF gibi) mi, grup içi göreli mi? | Mutlak | ☐ |
 | 9 | Çalışma günü/hafta sonu ve resmî tatil dikkate alınacak mı? | Hayır (takvim günü) | ☐ |
 | 10 | Yayın platformu: GitHub Pages / Netlify / Cloudflare? | GitHub Pages | ☐ |
@@ -896,6 +896,9 @@ Aşama 0'da cevaplanacak ve buraya işlenecek.
 |---|---|
 | 29.10.2026 | İlk sürüm: kapsam, veri modeli, yol haritası, yapay zekâ kuralları |
 | 30.10.2026 | Aşama 0: iskelet, araçlar, tipler ve örnek veri hazır; karar 1 ve 2 işlendi |
+| 30.10.2026 | Aşama 1: store, IndexedDB otomatik kayıt, ağaç tablo + satır içi düzenleme, künye, tema, JSON yedek; karar 3 ve 4 işlendi |
+| 30.10.2026 | Aşama 2: schedule/timeline/rows domain + testler, Gantt (hizalı/senkron kaydırma, bugün çizgisi, zoom, dolgu, gecikme kırmızı, başlama/bitim işaretleri); kapanışta kayıt kaybı düzeltildi (localStorage acil kayıt); karar 7 işlendi |
+| 30.10.2026 | Aşama 3 (kısmi): sütun yöneticisi (ekle/sil/yeniden adlandır/tip değiştir/sırala/gizle), 6 hücre tipi, seçim seçenekleri, güvenli bağlantı, veri kaybı uyarıları; şema değişmedi (migration gerekmedi, eski yedek testi eklendi) |
 
 ---
 

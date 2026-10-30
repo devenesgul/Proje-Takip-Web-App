@@ -31,6 +31,10 @@ export interface ColumnDefinition {
   width?: number;
 }
 
+/**
+ * Özel sütun değeri. Tipe göre: metin/bağlantı/seçim → string, sayı → number,
+ * tarih → "yyyy-aa-gg" string, onay → boolean. Boş hücre: değer yok veya null.
+ */
 export type CustomValue = string | number | boolean | null;
 
 /** Başlangıç–bitiş aralığı (tarih + saat), alanlar boş olabilir. */

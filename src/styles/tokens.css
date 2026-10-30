@@ -1,8 +1,80 @@
-/* Tema değişkenleri (renk, yazı). Aşama 1'de açık/koyu tema bu değişkenler üzerine kurulacak. */
+/* Tema değişkenleri (renk, yazı, ölçü). Açık tema varsayılan; koyu tema <html data-theme="dark">
+   ile ya da "sistem" seçiliyken işletim sistemi koyu moddaysa uygulanır. */
 :root {
-  --color-bg: #ffffff;
+  color-scheme: light;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f1f5f9;
+  --color-border: #e2e8f0;
   --color-text: #1f2937;
+  --color-text-muted: #64748b;
+  --color-primary: #2563eb;
+  --color-primary-text: #ffffff;
+  --color-danger: #dc2626;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-warning-bg: #fef3c7;
+  --color-danger-bg: #fee2e2;
+  --color-track: #e2e8f0;
+
+  /* Durum renkleri (PROJECT.md Bölüm 3.3) */
+  --status-not-started: #94a3b8;
+  --status-in-progress: #2563eb;
+  --status-done: #16a34a;
+  --status-delayed: #dc2626;
+  --status-on-hold: #d97706;
+
   --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size: 14px;
+  --radius: 6px;
+  --row-height: 36px;
+  /* Gantt başlığı 3 satır (eksen üst, eksen alt, işaretler); tablo başlığı da bu yükseklikte */
+  --gantt-header-row: 18px;
+  --gantt-header-height: calc(3 * var(--gantt-header-row));
+  --color-today: #dc2626;
+  --color-project-marker: #475569;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-alt: #273449;
+  --color-border: #334155;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-primary: #3b82f6;
+  --color-danger: #f87171;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-warning-bg: #422006;
+  --color-danger-bg: #450a0a;
+  --color-track: #334155;
+  --color-project-marker: #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='system'] {
+    color-scheme: dark;
+    --color-bg: #0f172a;
+    --color-surface: #1e293b;
+    --color-surface-alt: #273449;
+    --color-border: #334155;
+    --color-text: #e2e8f0;
+    --color-text-muted: #94a3b8;
+    --color-primary: #3b82f6;
+    --color-danger: #f87171;
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-warning-bg: #422006;
+    --color-danger-bg: #450a0a;
+    --color-track: #334155;
+    --color-project-marker: #94a3b8;
+  }
 }
 
 body {
@@ -10,8 +82,5 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-family);
-}
-
-.app {
-  padding: 1rem;
+  font-size: var(--font-size);
 }

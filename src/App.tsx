@@ -1,16 +1,26 @@
-// Uygulama kök bileşeni. Aşama 0: yalnızca iskeletin çalıştığını gösterir.
-import { sampleProject } from './data/sampleProject';
+// Uygulama kök bileşeni: üst bar, bildirimler ve çalışma alanı (tablo + Gantt).
+// Temayı <html data-theme> üzerinden uygular.
+import { useEffect } from 'react';
+import { NoticeBar } from './components/layout/NoticeBar';
+import { TopBar } from './components/layout/TopBar';
+import { Workspace } from './components/layout/Workspace';
+import { useProjectStore } from './store/projectStore';
 
 function App() {
-  const itemCount = sampleProject.groups.reduce((sum, group) => sum + group.items.length, 0);
+  const theme = useProjectStore((state) => state.project.settings.theme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   return (
-    <main className="app">
-      <h1>Proje Takip</h1>
-      <p>
-        {sampleProject.name}: {sampleProject.groups.length} iş kısmı, {itemCount} imalat kalemi
-      </p>
-    </main>
+    <div className="app">
+      <TopBar />
+      <NoticeBar />
+      <main>
+        <Workspace />
+      </main>
+    </div>
   );
 }
 
