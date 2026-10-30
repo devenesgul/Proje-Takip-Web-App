@@ -1,0 +1,234 @@
+/* Yazdırma düzeni (PROJECT.md 8.4): ekran arayüzü gizlenir, yalnızca .print-view basılır.
+   A4 yatay; renkli çubuklar için print-color-adjust: exact. */
+
+.print-view {
+  display: none;
+}
+
+@page {
+  size: A4 landscape;
+  margin: 10mm;
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+    font-size: 8pt;
+  }
+
+  .app {
+    display: none !important;
+  }
+
+  .print-view {
+    display: block;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+.print-header {
+  text-align: center;
+  margin-bottom: 4mm;
+}
+
+.print-header h1 {
+  margin: 0;
+  font-size: 14pt;
+}
+
+.print-header p {
+  margin: 1mm 0 0;
+  font-size: 10pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.print-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border: 0.5pt solid #000000;
+  margin-bottom: 4mm;
+}
+
+.print-info-row {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  border-bottom: 0.5pt solid #999999;
+}
+
+.print-info-key,
+.print-info-value {
+  padding: 0.8mm 2mm;
+}
+
+.print-info-key {
+  font-weight: 600;
+  border-right: 0.5pt solid #999999;
+}
+
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.print-table th,
+.print-table td {
+  border: 0.5pt solid #999999;
+  padding: 0.6mm 1.2mm;
+  text-align: left;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Sütun genişlikleri: kalan alan zaman şeridine */
+.print-table thead tr:first-child th:nth-child(1) {
+  width: 8mm;
+}
+
+.print-table thead tr:first-child th:nth-child(2) {
+  width: 62mm;
+}
+
+.print-table thead tr:first-child th:nth-child(3),
+.print-table thead tr:first-child th:nth-child(6) {
+  width: 15mm;
+}
+
+.print-table thead tr:first-child th:nth-child(4),
+.print-table thead tr:first-child th:nth-child(5) {
+  width: 17mm;
+}
+
+.print-table th {
+  background: #eeeeee;
+  font-weight: 600;
+}
+
+.print-table .num {
+  text-align: right;
+}
+
+.print-table tr {
+  break-inside: avoid;
+}
+
+.print-group td {
+  font-weight: 600;
+  background: #f3f3f3;
+}
+
+.print-item-name {
+  padding-left: 4mm !important;
+}
+
+.print-total td {
+  font-weight: 700;
+  border-top: 1pt solid #000000;
+}
+
+.print-table td.print-timeline,
+.print-table th.print-timeline {
+  padding: 0;
+}
+
+.print-lane {
+  position: relative;
+  height: 4.2mm;
+}
+
+.print-axis .print-lane {
+  height: 3.6mm;
+}
+
+.print-axis-label {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-left: 0.5pt solid #999999;
+  font-size: 6pt;
+  line-height: 3.6mm;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.print-month-line,
+.print-marker,
+.print-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+}
+
+.print-month-line {
+  border-left: 0.25pt solid #dddddd;
+}
+
+.print-marker {
+  border-left: 0.75pt dashed #444444;
+}
+
+.print-today {
+  border-left: 0.75pt solid #dc2626;
+}
+
+.print-bar {
+  position: absolute;
+  top: 0.9mm;
+  height: 2.4mm;
+  box-sizing: border-box;
+  /* Renk durum sınıfından (.status-*) veya grup renginden gelir. */
+  border: 0.5pt solid var(--bar-color, #94a3b8);
+  background: color-mix(in srgb, var(--bar-color, #94a3b8) 25%, #ffffff);
+  overflow: hidden;
+}
+
+.print-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--bar-color, #94a3b8);
+}
+
+.print-bar.group-bar {
+  top: 1.3mm;
+  height: 1.6mm;
+}
+
+.print-legend {
+  margin: 1.5mm 0 0;
+  font-size: 6.5pt;
+  color: #444444;
+}
+
+.print-signatures {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4mm;
+  margin-top: 8mm;
+  break-inside: avoid;
+}
+
+.print-signature {
+  display: flex;
+  flex-direction: column;
+  gap: 3mm;
+  padding-top: 2mm;
+  border-top: 0.75pt solid #000000;
+  text-align: center;
+}
+
+.print-signature span {
+  text-align: left;
+  font-size: 7pt;
+  color: #444444;
+}

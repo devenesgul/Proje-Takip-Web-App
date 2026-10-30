@@ -33,6 +33,9 @@
   --gantt-header-height: calc(3 * var(--gantt-header-row));
   --color-today: #dc2626;
   --color-project-marker: #475569;
+  /* S-eğrisi serileri (dataviz referans paleti 1. ve 2. slot; açık/koyu ayrı doğrulandı) */
+  --series-actual: #2a78d6;
+  --series-planned: #eb6834;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -55,6 +58,8 @@
   --color-danger-bg: #450a0a;
   --color-track: #334155;
   --color-project-marker: #94a3b8;
+  --series-actual: #3987e5;
+  --series-planned: #d95926;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -74,6 +79,8 @@
     --color-danger-bg: #450a0a;
     --color-track: #334155;
     --color-project-marker: #94a3b8;
+    --series-actual: #3987e5;
+    --series-planned: #d95926;
   }
 }
 

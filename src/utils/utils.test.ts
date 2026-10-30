@@ -1,7 +1,15 @@
 // Tarih ve sayı biçimlendirme yardımcılarının testleri.
 import { describe, expect, it } from 'vitest';
-import { formatDate, formatDateTime, fromInputValue, todayStamp, toInputValue } from './date';
-import { formatNumber, formatPercent, parseDecimal } from './number';
+import {
+  dayNumber,
+  formatDate,
+  formatDateTime,
+  fromInputValue,
+  isoFromDay,
+  todayStamp,
+  toInputValue,
+} from './date';
+import { formatNumber, formatPercent, formatSigned, parseDecimal } from './number';
 
 describe('date', () => {
   it('ISO → gg.aa.yyyy SS:dd', () => {
@@ -23,6 +31,10 @@ describe('date', () => {
     expect(fromInputValue('')).toBeUndefined();
   });
 
+  it('gün sayısı ↔ ISO gün başlangıcı', () => {
+    expect(isoFromDay(Math.floor(dayNumber('2028-02-29T15:30') ?? 0))).toBe('2028-02-29T00:00');
+  });
+
   it('dosya adı için bugünün tarihi', () => {
     expect(todayStamp(new Date(2026, 9, 3))).toBe('2026-10-03');
   });
@@ -33,6 +45,12 @@ describe('number', () => {
     expect(formatNumber(1234.56)).toBe('1.234,56');
     expect(formatNumber(42.555)).toBe('42,56');
     expect(formatPercent(42.5)).toBe('%42,5');
+  });
+
+  it('işaretli sayı', () => {
+    expect(formatSigned(3.25)).toBe('+3,25');
+    expect(formatSigned(-5)).toBe('\u22125');
+    expect(formatSigned(0)).toBe('0');
   });
 
   it('virgüllü, noktalı ve yüzde işaretli girdiyi okur', () => {

@@ -1,12 +1,19 @@
-// Çalışma alanı: zoom araç çubuğu + yan yana tablo ve Gantt.
+// Çalışma alanı: hızlı filtreler + zoom araç çubuğu, altında yan yana tablo ve Gantt.
 // İki bölmenin dikey kaydırması birbirine bağlıdır; zoom değişince Gantt bugüne kaydırılır.
+// Filtre tablo ve Gantt'a birlikte uygulanır (aynı satır listesi).
 import { useLayoutEffect, useRef, type UIEvent } from 'react';
+import {
+  countMatching,
+  matchesFilter,
+  QUICK_FILTER_LABELS,
+  type QuickFilter,
+} from '../../domain/filters';
 import { visibleRows } from '../../domain/rows';
 import { timelineRange, xOf } from '../../domain/timeline';
 import { useProjectStore } from '../../store/projectStore';
-import type { GanttZoom } from '../../types';
+import { useUiStore } from '../../store/uiStore';
+import type { GanttZoom, ISODateTime } from '../../types';
 import { GanttChart } from '../gantt/GanttChart';
-import { useNow } from '../common/useNow';
 import { ProjectTable } from '../table/ProjectTable';
 
 const ZOOM_LABELS: Record<GanttZoom, string> = { day: 'Gün', week: 'Hafta', month: 'Ay' };
@@ -14,16 +21,21 @@ const ZOOM_LABELS: Record<GanttZoom, string> = { day: 'Gün', week: 'Hafta', mon
 /** "Bugün" çizgisi görünür alanın soldan bu oranında durur. */
 const TODAY_VIEW_RATIO = 1 / 3;
 
-export function Workspace() {
+export function Workspace({ now }: { now: ISODateTime }) {
   const project = useProjectStore((state) => state.project);
   const addGroup = useProjectStore((state) => state.addGroup);
   const setGanttZoom = useProjectStore((state) => state.setGanttZoom);
-  const now = useNow();
+  const filter = useUiStore((state) => state.filter);
+  const setFilter = useUiStore((state) => state.setFilter);
+  const mobileTab = useUiStore((state) => state.mobileTab);
   const tableRef = useRef<HTMLDivElement>(null);
   const ganttRef = useRef<HTMLDivElement>(null);
 
   const zoom = project.settings.ganttZoom;
-  const rows = visibleRows(project.groups);
+  const rows = visibleRows(
+    project.groups,
+    filter === 'all' ? undefined : (item) => matchesFilter(item, filter, now),
+  );
   const range = timelineRange(project, zoom);
   const todayX = xOf(now, range, zoom);
 
@@ -34,9 +46,10 @@ export function Workspace() {
     }
   };
 
-  // Açılışta ve zoom değişince bugünü göster (yalnızca zoom'a bağlı; düzenlemede kaydırmaz).
+  // Açılışta, zoom değişince ve mobilde Gantt sekmesine geçince bugünü göster
+  // (gizli bölmede kaydırma uygulanamaz). Düzenlemelerde kaydırmaz.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useLayoutEffect(scrollToToday, [zoom]);
+  useLayoutEffect(scrollToToday, [zoom, mobileTab]);
 
   /** Bir bölme kaydırılınca diğerinin dikey konumunu eşitler. */
   const syncFrom = (target: HTMLDivElement | null) => (event: UIEvent<HTMLDivElement>) => {
@@ -58,6 +71,21 @@ export function Workspace() {
   return (
     <section className="workspace">
       <div className="workspace-toolbar">
+        <div className="filter-chips" role="group" aria-label="Hızlı filtre">
+          {(Object.keys(QUICK_FILTER_LABELS) as QuickFilter[]).map((value) => (
+            <button
+              key={value}
+              type="button"
+              className="chip"
+              aria-pressed={filter === value}
+              onClick={() => setFilter(value)}
+            >
+              {QUICK_FILTER_LABELS[value]}
+              <span className="chip-count">{countMatching(project.groups, value, now)}</span>
+            </button>
+          ))}
+        </div>
+        <span className="toolbar-spacer" />
         <div className="segmented" role="group" aria-label="Gantt ölçeği">
           {(Object.keys(ZOOM_LABELS) as GanttZoom[]).map((value) => (
             <button
@@ -75,6 +103,14 @@ export function Workspace() {
           Bugüne git
         </button>
       </div>
+      {rows.length === 0 && (
+        <p className="filter-empty">
+          “{QUICK_FILTER_LABELS[filter]}” filtresine uyan kalem yok.{' '}
+          <button type="button" className="link-button" onClick={() => setFilter('all')}>
+            Tümünü göster
+          </button>
+        </p>
+      )}
       <div className="split">
         <ProjectTable
           rows={rows}

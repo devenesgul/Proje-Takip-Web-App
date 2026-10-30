@@ -1,6 +1,8 @@
 // Uygulama durumu (Zustand): proje verisi ve onu değiştiren tüm aksiyonlar.
 // Bileşenler veriyi doğrudan değiştirmez; yalnızca bu aksiyonları çağırır.
 // Güncellemeler değişmez (immutable) yapılır: değişen dal yeni nesneyle değiştirilir.
+// Veri değiştiren aksiyonlar `commit` ile geçmişe yazılır (geri al/yinele) ve genel ilerleme
+// değiştiyse günün ilerleme kaydını günceller. Görünüm aksiyonları (tema, zoom, aç/kapat) geçmişe yazılmaz.
 import { create } from 'zustand';
 import { sampleProject } from '../data/sampleProject';
 import { checkDateRange, checkWeight, clampProgress, type CheckResult } from '../domain/validation';
@@ -17,7 +19,9 @@ import type {
 } from '../types';
 import * as columns from './columnActions';
 import type { ColumnPatch } from './columnActions';
+import { toIso } from '../utils/date';
 import { newId } from '../utils/id';
+import { keepViewState, pushHistory, recordProgress } from './history';
 
 /** Yeni gruplara sırayla verilen renkler. */
 export const GROUP_COLORS = [
@@ -47,7 +51,13 @@ export type ProjectPatch = Partial<Pick<Project, 'name' | 'description' | 'start
 
 export interface ProjectState {
   project: Project;
-  /** Projeyi tümüyle değiştirir (açılışta yükleme, JSON içe aktarma). */
+  /** Geri alınabilecek önceki durumlar (en eski başta) */
+  past: Project[];
+  /** Yinelenebilecek durumlar (en yakın sonda) */
+  future: Project[];
+  undo: () => void;
+  redo: () => void;
+  /** Projeyi tümüyle değiştirir (açılışta yükleme, JSON içe aktarma); geçmiş temizlenir. */
   replaceProject: (project: Project) => void;
   updateProject: (patch: ProjectPatch) => void;
   setInfo: (info: InfoField[]) => void;
@@ -127,139 +137,175 @@ function applyItemPatch(item: Item, patch: ItemPatch): { item: Item; check: Chec
   return { item: next, check: { ok: true } };
 }
 
-export const useProjectStore = create<ProjectState>()((set, get) => ({
-  project: sampleProject,
-
-  replaceProject: (project) => set({ project }),
-
-  updateProject: (patch) => set(({ project }) => ({ project: { ...project, ...patch } })),
-
-  setInfo: (info) => set(({ project }) => ({ project: { ...project, info } })),
-
-  setTheme: (theme) =>
-    set(({ project }) => ({ project: { ...project, settings: { ...project.settings, theme } } })),
-
-  setGanttZoom: (ganttZoom) =>
-    set(({ project }) => ({
-      project: { ...project, settings: { ...project.settings, ganttZoom } },
-    })),
-
-  addGroup: () => {
-    const id = newId();
-    set(({ project }) => {
-      const order = project.groups.length;
-      const group: Group = {
-        id,
-        name: NEW_GROUP_NAME,
-        color: GROUP_COLORS[order % GROUP_COLORS.length],
-        order,
-        expanded: true,
-        items: [],
+export const useProjectStore = create<ProjectState>()((set, get) => {
+  /** Veri değişikliği: geçmişe yazar, ileri geçmişi siler, ilerleme kaydını günceller. */
+  const commit = (update: (project: Project) => Project) =>
+    set((state) => {
+      const next = update(state.project);
+      if (next === state.project) return state;
+      return {
+        project: recordProgress(state.project, next, toIso(new Date())),
+        past: pushHistory(state.past, state.project),
+        future: [],
       };
-      return { project: { ...project, groups: [...project.groups, group] } };
     });
-    return id;
-  },
 
-  updateGroup: (groupId, patch) =>
-    set(({ project }) => ({ project: mapGroup(project, groupId, (g) => ({ ...g, ...patch })) })),
+  return {
+    project: sampleProject,
+    past: [],
+    future: [],
 
-  toggleGroup: (groupId) =>
-    set(({ project }) => ({
-      project: mapGroup(project, groupId, (g) => ({ ...g, expanded: !g.expanded })),
-    })),
-
-  removeGroup: (groupId) =>
-    set(({ project }) => ({
-      project: { ...project, groups: reindex(project.groups.filter((g) => g.id !== groupId)) },
-    })),
-
-  addItem: (groupId) => {
-    let id = '';
-    set(({ project }) => ({
-      project: mapGroup(project, groupId, (group) => {
-        const item = createItem(group.items.length);
-        id = item.id;
-        // Yeni kalem görünsün diye grup açılır.
-        return { ...group, expanded: true, items: [...group.items, item] };
+    undo: () =>
+      set((state) => {
+        const previous = state.past.at(-1);
+        if (!previous) return state;
+        return {
+          project: keepViewState(previous, state.project),
+          past: state.past.slice(0, -1),
+          future: [...state.future, state.project],
+        };
       }),
-    }));
-    return id;
-  },
 
-  updateItem: (groupId, itemId, patch) => {
-    const group = get().project.groups.find((g) => g.id === groupId);
-    const item = group?.items.find((i) => i.id === itemId);
-    if (!group || !item) return { ok: false, message: 'Kalem bulunamadı' };
+    redo: () =>
+      set((state) => {
+        const next = state.future.at(-1);
+        if (!next) return state;
+        return {
+          project: keepViewState(next, state.project),
+          past: pushHistory(state.past, state.project),
+          future: state.future.slice(0, -1),
+        };
+      }),
 
-    const result = applyItemPatch(item, patch);
-    if (!result.check.ok) return result.check;
+    replaceProject: (project) => set({ project, past: [], future: [] }),
 
-    set(({ project }) => ({
-      project: mapGroup(project, groupId, (g) => ({
-        ...g,
-        items: g.items.map((i) => (i.id === itemId ? result.item : i)),
+    updateProject: (patch) => commit((project) => ({ ...project, ...patch })),
+
+    setInfo: (info) => commit((project) => ({ ...project, info })),
+
+    setTheme: (theme) =>
+      set(({ project }) => ({ project: { ...project, settings: { ...project.settings, theme } } })),
+
+    setGanttZoom: (ganttZoom) =>
+      set(({ project }) => ({
+        project: { ...project, settings: { ...project.settings, ganttZoom } },
       })),
-    }));
-    return result.check;
-  },
 
-  removeItem: (groupId, itemId) =>
-    set(({ project }) => ({
-      project: mapGroup(project, groupId, (g) =>
-        setItems(
-          g,
-          g.items.filter((i) => i.id !== itemId),
+    addGroup: () => {
+      const id = newId();
+      commit((project) => {
+        const order = project.groups.length;
+        const group: Group = {
+          id,
+          name: NEW_GROUP_NAME,
+          color: GROUP_COLORS[order % GROUP_COLORS.length],
+          order,
+          expanded: true,
+          items: [],
+        };
+        return { ...project, groups: [...project.groups, group] };
+      });
+      return id;
+    },
+
+    updateGroup: (groupId, patch) =>
+      commit((project) => mapGroup(project, groupId, (g) => ({ ...g, ...patch }))),
+
+    toggleGroup: (groupId) =>
+      set(({ project }) => ({
+        project: mapGroup(project, groupId, (g) => ({ ...g, expanded: !g.expanded })),
+      })),
+
+    removeGroup: (groupId) =>
+      commit((project) => ({
+        ...project,
+        groups: reindex(project.groups.filter((g) => g.id !== groupId)),
+      })),
+
+    addItem: (groupId) => {
+      let id = '';
+      commit((project) =>
+        mapGroup(project, groupId, (group) => {
+          const item = createItem(group.items.length);
+          id = item.id;
+          // Yeni kalem görünsün diye grup açılır.
+          return { ...group, expanded: true, items: [...group.items, item] };
+        }),
+      );
+      return id;
+    },
+
+    updateItem: (groupId, itemId, patch) => {
+      const group = get().project.groups.find((g) => g.id === groupId);
+      const item = group?.items.find((i) => i.id === itemId);
+      if (!group || !item) return { ok: false, message: 'Kalem bulunamadı' };
+
+      const result = applyItemPatch(item, patch);
+      if (!result.check.ok) return result.check;
+
+      commit((project) =>
+        mapGroup(project, groupId, (g) => ({
+          ...g,
+          items: g.items.map((i) => (i.id === itemId ? result.item : i)),
+        })),
+      );
+      return result.check;
+    },
+
+    removeItem: (groupId, itemId) =>
+      commit((project) =>
+        mapGroup(project, groupId, (g) =>
+          setItems(
+            g,
+            g.items.filter((i) => i.id !== itemId),
+          ),
         ),
       ),
-    })),
 
-  duplicateItem: (groupId, itemId) => {
-    const group = get().project.groups.find((g) => g.id === groupId);
-    const index = group?.items.findIndex((i) => i.id === itemId) ?? -1;
-    if (!group || index < 0) return null;
+    duplicateItem: (groupId, itemId) => {
+      const group = get().project.groups.find((g) => g.id === groupId);
+      const index = group?.items.findIndex((i) => i.id === itemId) ?? -1;
+      if (!group || index < 0) return null;
 
-    const original = group.items[index];
-    const copy: Item = {
-      ...structuredClone(original),
-      id: newId(),
-      name: original.name + COPY_SUFFIX,
-    };
-    const items = [...group.items];
-    items.splice(index + 1, 0, copy);
-    set(({ project }) => ({ project: mapGroup(project, groupId, (g) => setItems(g, items)) }));
-    return copy.id;
-  },
+      const original = group.items[index];
+      const copy: Item = {
+        ...structuredClone(original),
+        id: newId(),
+        name: original.name + COPY_SUFFIX,
+      };
+      const items = [...group.items];
+      items.splice(index + 1, 0, copy);
+      commit((project) => mapGroup(project, groupId, (g) => setItems(g, items)));
+      return copy.id;
+    },
 
-  addColumn: (name, type) => {
-    const id = newId();
-    set(({ project }) => ({ project: columns.addColumn(project, id, name, type) }));
-    return id;
-  },
-  updateColumn: (columnId, patch) =>
-    set(({ project }) => ({ project: columns.updateColumn(project, columnId, patch) })),
-  moveColumn: (columnId, delta) =>
-    set(({ project }) => ({ project: columns.moveColumn(project, columnId, delta) })),
-  removeColumn: (columnId) =>
-    set(({ project }) => ({ project: columns.removeColumn(project, columnId) })),
-  setColumnType: (columnId, type) =>
-    set(({ project }) => ({ project: columns.setColumnType(project, columnId, type) })),
-  addOption: (columnId, value) => {
-    const result = columns.addOption(get().project, columnId, value);
-    if (result.check.ok) set({ project: result.project });
-    return result.check;
-  },
-  renameOption: (columnId, from, to) => {
-    const result = columns.renameOption(get().project, columnId, from, to);
-    if (result.check.ok) set({ project: result.project });
-    return result.check;
-  },
-  setOptionColor: (columnId, value, color) =>
-    set(({ project }) => ({ project: columns.setOptionColor(project, columnId, value, color) })),
-  removeOption: (columnId, value) =>
-    set(({ project }) => ({ project: columns.removeOption(project, columnId, value) })),
-  setCustomValue: (groupId, itemId, columnId, value) =>
-    set(({ project }) => ({
-      project: columns.setCustomValue(project, groupId, itemId, columnId, value),
-    })),
-}));
+    addColumn: (name, type) => {
+      const id = newId();
+      commit((project) => columns.addColumn(project, id, name, type));
+      return id;
+    },
+    updateColumn: (columnId, patch) =>
+      commit((project) => columns.updateColumn(project, columnId, patch)),
+    moveColumn: (columnId, delta) =>
+      commit((project) => columns.moveColumn(project, columnId, delta)),
+    removeColumn: (columnId) => commit((project) => columns.removeColumn(project, columnId)),
+    setColumnType: (columnId, type) =>
+      commit((project) => columns.setColumnType(project, columnId, type)),
+    addOption: (columnId, value) => {
+      const result = columns.addOption(get().project, columnId, value);
+      if (result.check.ok) commit(() => result.project);
+      return result.check;
+    },
+    renameOption: (columnId, from, to) => {
+      const result = columns.renameOption(get().project, columnId, from, to);
+      if (result.check.ok) commit(() => result.project);
+      return result.check;
+    },
+    setOptionColor: (columnId, value, color) =>
+      commit((project) => columns.setOptionColor(project, columnId, value, color)),
+    removeOption: (columnId, value) =>
+      commit((project) => columns.removeOption(project, columnId, value)),
+    setCustomValue: (groupId, itemId, columnId, value) =>
+      commit((project) => columns.setCustomValue(project, groupId, itemId, columnId, value)),
+  };
+});

@@ -618,15 +618,15 @@ Kurulum   İskelet    Gantt &    Özelleştir  Panel &    Cila &     İleri
 ### AŞAMA 4: Panel ve Grafikler
 **Amaç:** Bakınca her şeyi gören ekran.
 
-- [ ] Özet kartlar: genel ilerleme, kalan gün, geciken iş, bu hafta yapılacaklar, sapma
-- [ ] Hızlı filtreler: Tümü / Bu hafta / Gecikenler / Devam eden / Bitenler
+- [x] Özet kartlar: genel ilerleme, kalan gün, geciken iş, bu hafta yapılacaklar, sapma
+- [x] Hızlı filtreler: Tümü / Bu hafta / Gecikenler / Devam eden / Bitenler
 - [ ] Arama ve çoklu filtre (durum, grup, tarih aralığı, etiket)
 - [ ] Grup bazlı ilerleme çubukları
-- [ ] Domain: `scurve.ts` + testler
-- [ ] S-Eğrisi grafiği (planlanan vs. gerçekleşen)
-- [ ] İlerleme kayıtları (her güncellemede snapshot)
+- [x] Domain: `scurve.ts` + testler
+- [x] S-Eğrisi grafiği (planlanan vs. gerçekleşen)
+- [x] İlerleme kayıtları (her güncellemede snapshot)
 - [ ] Sürükle-bırak ile satır sıralama
-- [ ] Geri al / Yinele (Undo/Redo)
+- [x] Geri al / Yinele (Undo/Redo)
 
 **Çıktı:** Tek ekranda proje sağlığı net görünüyor.
 
@@ -635,15 +635,15 @@ Kurulum   İskelet    Gantt &    Özelleştir  Panel &    Cila &     İleri
 ### AŞAMA 5: Cila, Çıktılar ve Yayın
 **Amaç:** Her yerden kullanılabilen, düzgün, yedekli uygulama.
 
-- [ ] Mobil uyumlu düzen (sekmeli görünüm)
-- [ ] Yazdırma/PDF düzeni (künye + tablo + Gantt + imza bloğu)
-- [ ] Excel (.xlsx) dışa aktarım
-- [ ] PWA: manifest, ikon, ana ekrana ekleme, çevrimdışı çalışma
+- [x] Mobil uyumlu düzen (sekmeli görünüm)
+- [x] Yazdırma/PDF düzeni (künye + tablo + Gantt + imza bloğu)
+- [x] Excel (.xlsx) dışa aktarım
+- [x] PWA: manifest, ikon, ana ekrana ekleme, çevrimdışı çalışma
 - [ ] Boş durum ekranları ("henüz kalem yok, ekle"), hata mesajları
 - [ ] Performans kontrolü (200+ kalemde akıcılık)
 - [ ] Erişilebilirlik kontrolü (klavye, kontrast)
 - [ ] GitHub Pages / Netlify / Cloudflare Pages'e yayın
-- [ ] README: kullanım kılavuzu ve yedekleme önerisi
+- [x] README: kullanım kılavuzu ve yedekleme önerisi
 
 **Çıktı:** Linkten açılan, telefondan da kullanılan, yedeği alınabilen uygulama. **v1.0**
 
@@ -673,16 +673,16 @@ Bir özellik, aşağıdaki maddeler sağlanınca "bitti" sayılır.
 - [ ] Hem masaüstünde hem telefonda kullanılabilir
 
 ### 10.2 Hesaplama
-- [ ] Ağırlıklar toplamı 100 ise genel ilerleme `Σ(ağırlık × tamamlanma)/100` ile birebir eşleşir (testle doğrulanmış)
-- [ ] Ağırlık toplamı 100 değilse uyarı farkı doğru gösterir
-- [ ] Bitiş tarihi geçmiş ve %100 olmayan kalem "Gecikti" görünür
-- [ ] Kalan gün hesabı doğru (negatifte "X gün gecikti")
-- [ ] S-eğrisi: tüm kalemler tamamlanınca planlanan eğri %100'e ulaşır
+- [x] Ağırlıklar toplamı 100 ise genel ilerleme `Σ(ağırlık × tamamlanma)/100` ile birebir eşleşir (testle doğrulanmış)
+- [x] Ağırlık toplamı 100 değilse uyarı farkı doğru gösterir
+- [x] Bitiş tarihi geçmiş ve %100 olmayan kalem "Gecikti" görünür
+- [x] Kalan gün hesabı doğru (negatifte "X gün gecikti")
+- [x] S-eğrisi: tüm kalemler tamamlanınca planlanan eğri %100'e ulaşır
 
 ### 10.3 Veri güvenliği
-- [ ] JSON dışa aktarılan dosya tekrar içe aktarılınca birebir aynı proje oluşur
-- [ ] Bozuk/eksik JSON yüklenirse uygulama çökmez, anlaşılır hata verir
-- [ ] Silme işlemleri onay ister veya geri alınabilir
+- [x] JSON dışa aktarılan dosya tekrar içe aktarılınca birebir aynı proje oluşur
+- [x] Bozuk/eksik JSON yüklenirse uygulama çökmez, anlaşılır hata verir
+- [x] Silme işlemleri onay ister veya geri alınabilir
 
 ### 10.4 Özel sütunlar
 - [x] Sütun ekleyince tüm mevcut satırlarda boş hücre görünür
@@ -864,7 +864,7 @@ Aşama 0'da cevaplanacak ve buraya işlenecek.
 | 7 | Gantt granülaritesi: Gün bazlı mı, PDF'teki gibi hafta bazlı mı? | Gün/Hafta/Ay geçişli | ✔ Gün/Hafta/Ay geçişli (ayar projeyle saklanır). Tarih hesapları date-fns olmadan, takvim günü üzerinden (`utils/date.ts`) |
 | 8 | Ağırlık modeli: mutlak (PDF gibi) mi, grup içi göreli mi? | Mutlak | ☐ |
 | 9 | Çalışma günü/hafta sonu ve resmî tatil dikkate alınacak mı? | Hayır (takvim günü) | ☐ |
-| 10 | Yayın platformu: GitHub Pages / Netlify / Cloudflare? | GitHub Pages | ☐ |
+| 10 | Yayın platformu: GitHub Pages / Netlify / Cloudflare? | GitHub Pages | ✔ GitHub Pages, GitHub Actions ile (lint+test+build geçerse yayın). `base: './'` sayesinde Netlify/Cloudflare'de de aynı derleme çalışır |
 | 11 | Para birimi/bütçe alanları gerekecek mi? | Özel sütunla çözülür | ☐ |
 | 12 | Bildirim/hatırlatma gerekli mi? | Aşama 6 | ☐ |
 
@@ -899,6 +899,8 @@ Aşama 0'da cevaplanacak ve buraya işlenecek.
 | 30.10.2026 | Aşama 1: store, IndexedDB otomatik kayıt, ağaç tablo + satır içi düzenleme, künye, tema, JSON yedek; karar 3 ve 4 işlendi |
 | 30.10.2026 | Aşama 2: schedule/timeline/rows domain + testler, Gantt (hizalı/senkron kaydırma, bugün çizgisi, zoom, dolgu, gecikme kırmızı, başlama/bitim işaretleri); kapanışta kayıt kaybı düzeltildi (localStorage acil kayıt); karar 7 işlendi |
 | 30.10.2026 | Aşama 3 (kısmi): sütun yöneticisi (ekle/sil/yeniden adlandır/tip değiştir/sırala/gizle), 6 hücre tipi, seçim seçenekleri, güvenli bağlantı, veri kaybı uyarıları; şema değişmedi (migration gerekmedi, eski yedek testi eklendi) |
+| 30.10.2026 | Aşama 4 (kısmi): scurve/filters domain + testler, özet kartlar (sapma ±), hızlı filtreler, S-eğrisi (SVG, Recharts yerine), günlük ilerleme kaydı, geri al/yinele + kısayollar |
+| 30.10.2026 | Aşama 5 (kısmi): mobil sekmeli düzen + menü, yazdırma/PDF (künye, sığdırılmış Gantt, imza bloğu), Excel (SheetJS 0.20.3, CDN'den, dinamik yükleme), PWA (manifest, ikonlar, elle service worker), GitHub Pages iş akışı, README |
 
 ---
 

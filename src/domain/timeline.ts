@@ -12,6 +12,7 @@ import {
 } from '../utils/date';
 
 const DAYS_PER_WEEK = 7;
+const MONTHS_PER_YEAR = 12;
 
 /** Zoom düzeyine göre bir günün piksel genişliği. */
 export const DAY_WIDTH: Record<GanttZoom, number> = { day: 32, week: 8, month: 2.5 };
@@ -165,4 +166,27 @@ export function axisHeader(range: TimelineRange, zoom: GanttZoom): AxisHeader {
     case 'month':
       return { top: segments(range, zoom, byYear), bottom: segments(range, zoom, byShortMonth) };
   }
+}
+
+export interface Tick {
+  day: number;
+  label: string;
+}
+
+/** Aralığa sığacak sayıda ay başı işareti; en fazla `maxTicks` olacak şekilde 1/2/3/6/12 ay arayla. */
+export function monthTicks(startDay: number, endDay: number, maxTicks: number): Tick[] {
+  const steps = [1, 2, 3, 6, 12];
+  const first = dayParts(startDay);
+  const months: Tick[] = [];
+  for (let i = 0; ; i++) {
+    const year = first.year + Math.floor((first.month - 1 + i) / MONTHS_PER_YEAR);
+    const month = ((first.month - 1 + i) % MONTHS_PER_YEAR) + 1;
+    const day = Date.UTC(year, month - 1, 1) / MS_PER_DAY;
+    if (day > endDay) break;
+    if (day >= startDay) {
+      months.push({ day, label: `${MONTH_SHORT_NAMES[month - 1]} ${year}` });
+    }
+  }
+  const step = steps.find((s) => Math.ceil(months.length / s) <= maxTicks) ?? MONTHS_PER_YEAR;
+  return months.filter((_, index) => index % step === 0);
 }

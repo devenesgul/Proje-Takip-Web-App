@@ -10,6 +10,7 @@ import {
   DAY_WIDTH,
   groupSpan,
   MIN_BAR_WIDTH,
+  monthTicks,
   RANGE_PADDING_DAYS,
   timelineRange,
   timelineWidth,
@@ -153,5 +154,19 @@ describe('visibleRows', () => {
     const rows = visibleRows([open, closed, empty]);
     expect(rows.map((r) => r.kind)).toEqual(['group', 'item', 'item', 'group', 'group', 'empty']);
     expect(new Set(rows.map((r) => r.key)).size).toBe(rows.length);
+  });
+});
+
+describe('monthTicks', () => {
+  it('ay başlarını verir, sınırı aşarsa seyreltir', () => {
+    const start = day('2026-07-24T00:00');
+    const end = day('2028-07-13T00:00');
+    const all = monthTicks(start, end, 100);
+    expect(all[0].label).toBe('Ağu 2026');
+    expect(all.at(-1)?.label).toBe('Tem 2028');
+    expect(all).toHaveLength(24);
+    const few = monthTicks(start, end, 8);
+    expect(few.length).toBeLessThanOrEqual(8);
+    expect(few.map((t) => t.label).slice(0, 2)).toEqual(['Ağu 2026', 'Kas 2026']);
   });
 });

@@ -12,6 +12,16 @@ export function formatPercent(value: number): string {
   return `%${formatNumber(value)}`;
 }
 
+/** Gerçek eksi işareti (U+2212): tire yerine, sayılarda daha okunaklı. */
+const MINUS_SIGN = '\u2212';
+
+/** İşaretli sayı: "+3,2" / "−5" / "0" (sapma gibi yön bildiren değerler için). */
+export function formatSigned(value: number): string {
+  if (value > 0) return `+${formatNumber(value)}`;
+  if (value < 0) return `${MINUS_SIGN}${formatNumber(-value)}`;
+  return formatNumber(0);
+}
+
 /**
  * Kullanıcı girdisini sayıya çevirir. "%" işareti ve boşluklar yok sayılır.
  * Virgül varsa ondalık ayırıcıdır ve noktalar binlik ayırıcı sayılır ("1.234,5").

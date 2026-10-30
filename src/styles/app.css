@@ -11,6 +11,7 @@ main {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
@@ -121,20 +122,6 @@ main {
 
 .save-error {
   color: var(--color-danger);
-}
-
-.overall-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.overall-label {
-  color: var(--color-text-muted);
-}
-
-.overall .progress {
-  flex: 1 1 200px;
-  max-width: 480px;
 }
 
 .weight-ok {
@@ -891,4 +878,522 @@ main {
 
 .tree-table .group-row td.col-name {
   background: var(--color-surface-alt);
+}
+
+/* --- Özet kartlar --- */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--space-3);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+}
+
+.card-button {
+  cursor: pointer;
+}
+
+.card-button:hover {
+  border-color: var(--color-primary);
+}
+
+.card-button[aria-pressed='true'] {
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+.card-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.card-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.card-detail {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.card .progress {
+  width: 100%;
+  margin: var(--space-1) 0;
+}
+
+.tone-bad .card-value {
+  color: var(--color-danger);
+}
+
+.tone-good .card-value {
+  color: var(--color-success);
+}
+
+.card .weight-warning,
+.card .weight-ok {
+  font-size: 0.78rem;
+  align-self: flex-start;
+}
+
+/* --- Hızlı filtreler --- */
+.workspace-toolbar {
+  flex-wrap: wrap;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.chip {
+  font: inherit;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.chip-count {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+.filter-empty {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* --- S-eğrisi --- */
+.scurve-panel {
+  flex: none;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.scurve-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.scurve-header h2 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.scurve-note {
+  font-size: 0.8rem;
+}
+
+.legend {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Gösterge ve ipucunda seri anahtarı: kısa çizgi (kutu değil), çizginin biçimini taşır. */
+.key {
+  display: inline-block;
+  width: 16px;
+  height: 0;
+  border-top: 2px solid var(--series-actual);
+}
+
+.key-planned {
+  border-top: 2px dashed var(--series-planned);
+}
+
+.scurve {
+  position: relative;
+}
+
+.scurve svg {
+  display: block;
+  touch-action: none;
+}
+
+.scurve svg:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.scurve-grid {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+
+.scurve-axis {
+  fill: var(--color-text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.scurve-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.scurve-actual {
+  stroke: var(--series-actual);
+}
+
+/* Kesikli çizgi ikincil kodlama: renk ayrımı olmadan da seriler ayırt edilir. */
+.scurve-planned {
+  stroke: var(--series-planned);
+  stroke-dasharray: 6 4;
+}
+
+.scurve-dot {
+  fill: var(--series-actual);
+  stroke: var(--color-surface);
+  stroke-width: 2;
+}
+
+.scurve-end-label {
+  fill: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.scurve-today {
+  stroke: var(--color-text-muted);
+  stroke-width: 1;
+}
+
+.scurve-crosshair {
+  stroke: var(--color-text);
+  stroke-width: 1;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.scurve-tooltip {
+  position: absolute;
+  top: 8px;
+  min-width: 150px;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+.tooltip-date {
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+}
+
+.tooltip-row strong {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.scurve-table summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.scurve-table table {
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: var(--space-1);
+}
+
+.scurve-table th,
+.scurve-table td {
+  padding: 2px var(--space-3) 2px 0;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-buttons .button {
+  font-size: 1.1rem;
+  line-height: 1;
+  min-width: 34px;
+}
+
+/* --- Dosya menüsü --- */
+.menu {
+  position: relative;
+}
+
+.menu > summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 10;
+  min-width: 200px;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 15%);
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  font: inherit;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--color-surface-alt);
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.menu-toggle,
+.mobile-tabs {
+  display: none;
+}
+
+/* --- Mobil düzen (Bölüm 8.3/5): Panel | Tablo | Gantt sekmeleri --- */
+@media (max-width: 768px) {
+  /* Dokunmatik için daha yüksek satır; tablo ve Gantt aynı değişkeni kullandığından hiza korunur. */
+  :root {
+    --row-height: 40px;
+  }
+
+  .app {
+    height: 100dvh;
+  }
+
+  .top-bar {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .project-title {
+    font-size: 1rem;
+    flex-basis: 100%;
+  }
+
+  .toolbar {
+    width: 100%;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .toolbar-actions {
+    display: none;
+    width: 100%;
+  }
+
+  .toolbar-actions.open {
+    display: flex;
+  }
+
+  .menu-panel {
+    left: 0;
+    right: auto;
+  }
+
+  .mobile-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .mobile-tab {
+    flex: 1;
+    font: inherit;
+    padding: var(--space-2);
+    min-height: 44px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .mobile-tab[aria-pressed='true'] {
+    color: var(--color-text);
+    font-weight: 600;
+    border-bottom-color: var(--color-primary);
+  }
+
+  main {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  .card-value {
+    font-size: 1.25rem;
+  }
+
+  /* Panel sekmesi: kartlar + S-eğrisi; çalışma alanı gizli */
+  main[data-mobile-tab='panel'] .workspace {
+    display: none;
+  }
+
+  main[data-mobile-tab='panel'] .scurve-panel {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* Tablo ve Gantt sekmeleri: kartlar ve S-eğrisi gizli */
+  main:not([data-mobile-tab='panel']) .summary-cards,
+  main:not([data-mobile-tab='panel']) .scurve-panel {
+    display: none;
+  }
+
+  main[data-mobile-tab='table'] .gantt-pane {
+    display: none;
+  }
+
+  main[data-mobile-tab='table'] .table-pane {
+    flex: 1;
+    border-right: none;
+  }
+
+  /* Gantt sekmesi: satırın ne olduğu görünsün diye tablodan yalnızca ad sütunu kalır */
+  main[data-mobile-tab='gantt'] .table-pane {
+    flex: 0 0 40%;
+  }
+
+  main[data-mobile-tab='gantt'] .tree-table th:not(.col-name),
+  main[data-mobile-tab='gantt'] .tree-table td:not(.col-name) {
+    display: none;
+  }
+
+  main[data-mobile-tab='gantt'] .col-name {
+    min-width: 0;
+  }
+
+  main[data-mobile-tab='gantt'] .col-name .cell-button {
+    max-width: 120px;
+  }
+
+  main[data-mobile-tab='gantt'] .item-name {
+    padding-left: 12px !important;
+  }
+
+  main[data-mobile-tab='gantt'] .badge {
+    display: none;
+  }
+
+  main[data-mobile-tab='gantt'] .gantt-pane {
+    min-width: 0;
+  }
+
+  /* Zoom yalnızca Gantt sekmesinde anlamlı */
+  main:not([data-mobile-tab='gantt']) .workspace-toolbar .segmented,
+  main:not([data-mobile-tab='gantt']) .workspace-toolbar .toolbar-spacer + .segmented + .button {
+    display: none;
+  }
+
+  .filter-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .chip {
+    white-space: nowrap;
+  }
+
+  .col-name {
+    min-width: 160px;
+  }
+
+  .col-name .cell-button {
+    max-width: 150px;
+  }
+
+  /* Dokunmatik hedefler: satıra sığacak en büyük boy */
+  .icon-button {
+    min-width: 34px;
+    min-height: 34px;
+  }
 }

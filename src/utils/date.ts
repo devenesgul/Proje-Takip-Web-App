@@ -86,6 +86,12 @@ export function dayParts(dayIndex: number): DayParts {
   };
 }
 
+/** Tam gün sayısı → o günün başlangıcı ISO "yyyy-aa-ggT00:00". */
+export function isoFromDay(dayIndex: number): ISODateTime {
+  const { year, month, day } = dayParts(dayIndex);
+  return `${year}-${pad(month)}-${pad(day)}T00:00`;
+}
+
 export const MONTH_NAMES = [
   'Ocak',
   'Şubat',

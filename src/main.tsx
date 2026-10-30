@@ -1,8 +1,10 @@
 // Uygulama giriş noktası: kayıtlı projeyi yükler, otomatik kaydı başlatır ve React kökünü oluşturur.
+// Yayın derlemesinde çevrimdışı çalışma için service worker kaydedilir (geliştirmede kapalı).
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles/tokens.css';
 import './styles/app.css';
+import './styles/print.css';
 import App from './App';
 import { readProject } from './storage/importJson';
 import { initPersistence } from './storage/persist';
@@ -19,3 +21,11 @@ void initPersistence(readProject).then(() => {
     </StrictMode>,
   );
 });
+
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((error: unknown) => {
+      console.error('Service worker kaydedilemedi', error);
+    });
+  });
+}

@@ -1,12 +1,10 @@
-// Üst bar: proje adı, genel ilerleme çubuğu, ağırlık uyarısı, kayıt durumu ve ana işlemler.
+// Üst bar: proje adı, kayıt durumu, geri al/yinele ve ana işlemler.
+// Mobilde işlemler "☰ Menü" düğmesinin altına toplanır (CSS ile; masaüstünde hep görünür).
 import { useState } from 'react';
-import { checkWeights, overallProgress } from '../../domain/progress';
 import { useProjectStore } from '../../store/projectStore';
 import { useUiStore, type SaveStatus } from '../../store/uiStore';
 import type { Theme } from '../../types';
-import { formatPercent } from '../../utils/number';
 import { ColumnManager } from '../columns/ColumnManager';
-import { ProgressBar } from '../common/ProgressBar';
 import { BackupButtons } from './BackupButtons';
 import { ProjectInfoModal } from './ProjectInfoModal';
 
@@ -23,29 +21,18 @@ const THEME_LABELS: Record<Theme, string> = {
   dark: 'Koyu tema',
 };
 
-function WeightNotice() {
-  const groups = useProjectStore((state) => state.project.groups);
-  const { total, diff, state } = checkWeights(groups);
-  if (state === 'ok') {
-    return <span className="weight-ok">✔ Ağırlık toplamı {formatPercent(total)}</span>;
-  }
-  const detail = state === 'missing' ? 'eksik' : 'fazla';
-  return (
-    <span className="weight-warning" role="status">
-      ⚠ Ağırlık toplamı {formatPercent(total)} ({formatPercent(diff)} {detail})
-    </span>
-  );
-}
-
 export function TopBar() {
   const project = useProjectStore((state) => state.project);
   const addGroup = useProjectStore((state) => state.addGroup);
   const setTheme = useProjectStore((state) => state.setTheme);
+  const undo = useProjectStore((state) => state.undo);
+  const redo = useProjectStore((state) => state.redo);
+  const canUndo = useProjectStore((state) => state.past.length > 0);
+  const canRedo = useProjectStore((state) => state.future.length > 0);
   const saveStatus = useUiStore((state) => state.saveStatus);
   const [infoOpen, setInfoOpen] = useState(false);
   const [columnsOpen, setColumnsOpen] = useState(false);
-
-  const progress = overallProgress(project.groups);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="top-bar">
@@ -55,35 +42,62 @@ export function TopBar() {
           <span className={`save-status save-${saveStatus}`} aria-live="polite">
             {SAVE_LABELS[saveStatus]}
           </span>
-          <button type="button" className="button" onClick={() => addGroup()}>
-            + İş kısmı
-          </button>
-          <button type="button" className="button" onClick={() => setInfoOpen(true)}>
-            Künye
-          </button>
-          <button type="button" className="button" onClick={() => setColumnsOpen(true)}>
-            Sütunlar
-          </button>
-          <BackupButtons />
-          <select
-            className="button"
-            aria-label="Tema"
-            value={project.settings.theme}
-            onChange={(e) => setTheme(e.target.value as Theme)}
+          <span className="segmented history-buttons" role="group" aria-label="Geçmiş">
+            <button
+              type="button"
+              className="button"
+              onClick={undo}
+              disabled={!canUndo}
+              title="Geri al (Ctrl/⌘+Z)"
+              aria-label="Geri al"
+            >
+              ↶
+            </button>
+            <button
+              type="button"
+              className="button"
+              onClick={redo}
+              disabled={!canRedo}
+              title="Yinele (Ctrl/⌘+Shift+Z)"
+              aria-label="Yinele"
+            >
+              ↷
+            </button>
+          </span>
+          <button
+            type="button"
+            className="button menu-toggle"
+            aria-expanded={menuOpen}
+            aria-controls="toolbar-actions"
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            {Object.entries(THEME_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+            ☰ Menü
+          </button>
+          <div id="toolbar-actions" className={`toolbar-actions ${menuOpen ? 'open' : ''}`}>
+            <button type="button" className="button" onClick={() => addGroup()}>
+              + İş kısmı
+            </button>
+            <button type="button" className="button" onClick={() => setInfoOpen(true)}>
+              Künye
+            </button>
+            <button type="button" className="button" onClick={() => setColumnsOpen(true)}>
+              Sütunlar
+            </button>
+            <BackupButtons />
+            <select
+              className="button"
+              aria-label="Tema"
+              value={project.settings.theme}
+              onChange={(e) => setTheme(e.target.value as Theme)}
+            >
+              {Object.entries(THEME_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
-      <div className="top-bar-row overall">
-        <span className="overall-value">{formatPercent(progress)}</span>
-        <span className="overall-label">genel ilerleme</span>
-        <ProgressBar value={progress} label="Genel ilerleme" size="large" />
-        <WeightNotice />
       </div>
       {infoOpen && <ProjectInfoModal onClose={() => setInfoOpen(false)} />}
       {columnsOpen && <ColumnManager onClose={() => setColumnsOpen(false)} />}
