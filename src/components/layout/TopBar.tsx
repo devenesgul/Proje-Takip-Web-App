@@ -37,7 +37,10 @@ export function TopBar() {
   return (
     <header className="top-bar">
       <div className="top-bar-row">
-        <h1 className="project-title">{project.name}</h1>
+        <div className="brand">
+          <p className="brand-kicker">İş programı</p>
+          <h1 className="project-title">{project.name}</h1>
+        </div>
         <div className="toolbar">
           <span className={`save-status save-${saveStatus}`} aria-live="polite">
             {SAVE_LABELS[saveStatus]}
@@ -74,7 +77,7 @@ export function TopBar() {
             ☰ Menü
           </button>
           <div id="toolbar-actions" className={`toolbar-actions ${menuOpen ? 'open' : ''}`}>
-            <button type="button" className="button" onClick={() => addGroup()}>
+            <button type="button" className="button primary" onClick={() => addGroup()}>
               + İş kısmı
             </button>
             <button type="button" className="button" onClick={() => setInfoOpen(true)}>

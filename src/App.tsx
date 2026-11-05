@@ -29,11 +29,14 @@ function App() {
 
   return (
     <>
+      <a className="skip-link" href="#icerik">
+        İçeriğe geç
+      </a>
       <div className="app">
         <TopBar />
         <NoticeBar />
         <MobileTabs />
-        <main data-mobile-tab={mobileTab}>
+        <main id="icerik" tabIndex={-1} data-mobile-tab={mobileTab}>
           <SummaryCards now={now} />
           <Workspace now={now} />
           <SCurvePanel now={now} />

@@ -1,13 +1,36 @@
 /* Uygulama düzeni ve bileşen stilleri. Renkler yalnızca tokens.css değişkenlerinden gelir. */
 
 .app {
+  position: relative;
+  z-index: 1;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-3);
+  top: var(--space-3);
+  z-index: 30;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-weight: 500;
+  text-decoration: none;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: none;
 }
 
 main {
   flex: 1;
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -27,6 +50,7 @@ main {
 /* --- Düğmeler --- */
 .button {
   font: inherit;
+  font-weight: 500;
   padding: var(--space-1) var(--space-3);
   min-height: 32px;
   border: 1px solid var(--color-border);
@@ -34,16 +58,30 @@ main {
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
+  transition:
+    background var(--duration) var(--ease),
+    border-color var(--duration) var(--ease),
+    color var(--duration) var(--ease),
+    transform 120ms var(--ease);
 }
 
-.button:hover {
+.button:hover:not(:disabled) {
   background: var(--color-surface-alt);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .button.primary {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-primary-text);
+}
+
+.button.primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .icon-button {
@@ -55,6 +93,9 @@ main {
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
+  transition:
+    background var(--duration) var(--ease),
+    color var(--duration) var(--ease);
 }
 
 .icon-button:hover {
@@ -78,17 +119,35 @@ main {
 
 :focus-visible {
   outline: 2px solid var(--color-primary);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 /* --- Üst bar --- */
 .top-bar {
   position: sticky;
   top: 0;
-  z-index: 2;
-  background: var(--color-surface);
+  z-index: var(--z-sticky);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
   border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 0 rgb(62 48 32 / 4%);
   padding: var(--space-3) var(--space-4);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1 1 auto;
+  min-width: 12rem;
+}
+
+.brand-kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
 }
 
 .top-bar-row {
@@ -104,8 +163,12 @@ main {
 
 .project-title {
   margin: 0;
-  font-size: 1.25rem;
-  flex: 1 1 auto;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-wrap: balance;
 }
 
 .toolbar {
@@ -144,7 +207,9 @@ main {
   margin: var(--space-3) var(--space-4) 0;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
-  background: var(--color-surface-alt);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-raised);
 }
 
 .notice-error {
@@ -173,12 +238,14 @@ main {
   position: absolute;
   inset: 0 auto 0 0;
   background: var(--color-primary);
+  transform-origin: left center;
 }
 
 /* --- Ağaç tablo --- */
 /* --- Çalışma alanı: tablo + Gantt yan yana --- */
 .workspace {
   flex: 1;
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -219,16 +286,19 @@ main {
 
 .split {
   flex: 1;
+  min-width: 0;
   min-height: 0;
   display: flex;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
   overflow: hidden;
 }
 
 /* Her iki bölme de yatay kaydırma çubuğu yerini ayırır; böylece dikey kaydırma sınırları eşit kalır. */
 .pane {
+  min-width: 0;
   min-height: 0;
   overflow-x: scroll;
   overflow-y: auto;
@@ -273,9 +343,10 @@ main {
   vertical-align: bottom;
   padding-bottom: var(--space-1);
   background: var(--color-surface-alt);
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   color: var(--color-text-muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
 }
 
 .col-name {
@@ -340,9 +411,26 @@ main {
 }
 
 .empty-state {
-  text-align: center;
-  padding: 48px var(--space-4);
+  align-self: center;
+  max-width: 26rem;
+  margin: auto;
+  text-align: left;
+  padding: 28px 28px 32px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
   color: var(--color-text-muted);
+}
+
+.empty-state p {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--color-text);
+  text-wrap: balance;
 }
 
 /* --- Satır içi düzenleme --- */
@@ -358,10 +446,14 @@ main {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition:
+    border-color var(--duration) var(--ease),
+    background var(--duration) var(--ease);
 }
 
 .cell-button:hover {
   border-color: var(--color-border);
+  background: color-mix(in srgb, var(--color-surface-alt) 70%, transparent);
 }
 
 .cell-placeholder {
@@ -415,13 +507,14 @@ main {
   width: min(640px, calc(100vw - 32px));
   padding: 0;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   color: var(--color-text);
+  box-shadow: var(--shadow-overlay);
 }
 
 .modal::backdrop {
-  background: rgb(0 0 0 / 40%);
+  background: rgb(30 26 21 / 46%);
 }
 
 .modal-header,
@@ -439,7 +532,11 @@ main {
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .modal-footer {
@@ -524,9 +621,10 @@ main {
   display: inline-block;
   margin-left: var(--space-1);
   padding: 0 6px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   line-height: 18px;
 }
 
@@ -649,6 +747,11 @@ main {
   border-radius: 4px;
   background: color-mix(in srgb, var(--bar-color) 22%, var(--color-surface));
   overflow: hidden;
+  transition: filter var(--duration) var(--ease);
+}
+
+.gantt-bar:hover {
+  filter: brightness(0.96);
 }
 
 .gantt-bar-fill {
@@ -731,13 +834,15 @@ main {
   --option-color: var(--color-text-muted);
   font: inherit;
   font-size: 0.85rem;
+  font-weight: 500;
   max-width: 180px;
   padding: 1px var(--space-1);
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
+  transition: border-color var(--duration) var(--ease);
 }
 
 .custom-select:hover {
@@ -885,19 +990,36 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: var(--space-3);
+  min-width: 0;
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  padding: 14px 16px 16px 18px;
+  border: none;
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
   color: var(--color-text);
   font: inherit;
   text-align: left;
+  overflow: hidden;
+  transition:
+    background var(--duration) var(--ease),
+    box-shadow var(--duration) var(--ease);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-border);
 }
 
 .card-button {
@@ -905,23 +1027,36 @@ main {
 }
 
 .card-button:hover {
-  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-surface-alt) 55%, var(--color-surface));
+}
+
+.card-button:active {
+  transform: translateY(1px);
 }
 
 .card-button[aria-pressed='true'] {
-  border-color: var(--color-primary);
-  box-shadow: inset 0 0 0 1px var(--color-primary);
+  box-shadow:
+    var(--shadow-raised),
+    inset 0 0 0 1px var(--color-primary);
+}
+
+.card-button[aria-pressed='true']::before {
+  background: var(--color-primary);
 }
 
 .card-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   color: var(--color-text-muted);
 }
 
 .card-value {
-  font-size: 1.6rem;
+  font-size: 1.65rem;
   font-weight: 600;
-  line-height: 1.2;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
 }
 
 .card-detail {
@@ -938,8 +1073,16 @@ main {
   color: var(--color-danger);
 }
 
+.tone-bad::before {
+  background: var(--color-danger);
+}
+
 .tone-good .card-value {
   color: var(--color-success);
+}
+
+.tone-good::before {
+  background: var(--color-success);
 }
 
 .card .weight-warning,
@@ -965,16 +1108,30 @@ main {
 
 .chip {
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
+  transition:
+    background var(--duration) var(--ease),
+    border-color var(--duration) var(--ease),
+    color var(--duration) var(--ease),
+    transform 120ms var(--ease);
+}
+
+.chip:hover:not([aria-pressed='true']) {
+  background: var(--color-surface-alt);
+}
+
+.chip:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .chip[aria-pressed='true'] {
@@ -1002,10 +1159,11 @@ main {
 /* --- S-eğrisi --- */
 .scurve-panel {
   flex: none;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
 }
 
 .scurve-header {
@@ -1017,7 +1175,10 @@ main {
 
 .scurve-header h2 {
   margin: 0;
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .scurve-note {
@@ -1126,7 +1287,7 @@ main {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-surface);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  box-shadow: var(--shadow-raised);
   font-size: 0.8rem;
   pointer-events: none;
 }
@@ -1192,13 +1353,13 @@ main {
   position: absolute;
   right: 0;
   top: calc(100% + 4px);
-  z-index: 10;
+  z-index: var(--z-menu);
   min-width: 200px;
   padding: var(--space-1);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-surface);
-  box-shadow: 0 4px 16px rgb(0 0 0 / 15%);
+  box-shadow: var(--shadow-overlay);
   display: flex;
   flex-direction: column;
 }
@@ -1246,9 +1407,12 @@ main {
     padding: var(--space-2) var(--space-3);
   }
 
-  .project-title {
-    font-size: 1rem;
+  .brand {
     flex-basis: 100%;
+  }
+
+  .project-title {
+    font-size: 1.35rem;
   }
 
   .toolbar {
@@ -1296,6 +1460,10 @@ main {
     color: var(--color-text);
     font-weight: 600;
     border-bottom-color: var(--color-primary);
+  }
+
+  .mobile-tab:active {
+    background: var(--color-surface-alt);
   }
 
   main {

@@ -21,6 +21,10 @@
     font-size: 8pt;
   }
 
+  body::before {
+    display: none !important;
+  }
+
   .app {
     display: none !important;
   }
