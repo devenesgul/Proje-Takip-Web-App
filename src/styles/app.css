@@ -994,11 +994,10 @@ main {
 }
 
 .card {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 14px 16px 16px 18px;
+  padding: 14px 16px 16px;
   border: none;
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -1006,20 +1005,9 @@ main {
   color: var(--color-text);
   font: inherit;
   text-align: left;
-  overflow: hidden;
   transition:
     background var(--duration) var(--ease),
     box-shadow var(--duration) var(--ease);
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--color-border);
 }
 
 .card-button {
@@ -1038,10 +1026,6 @@ main {
   box-shadow:
     var(--shadow-raised),
     inset 0 0 0 1px var(--color-primary);
-}
-
-.card-button[aria-pressed='true']::before {
-  background: var(--color-primary);
 }
 
 .card-label {
@@ -1073,16 +1057,8 @@ main {
   color: var(--color-danger);
 }
 
-.tone-bad::before {
-  background: var(--color-danger);
-}
-
 .tone-good .card-value {
   color: var(--color-success);
-}
-
-.tone-good::before {
-  background: var(--color-success);
 }
 
 .card .weight-warning,
