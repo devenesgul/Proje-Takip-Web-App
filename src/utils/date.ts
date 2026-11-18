@@ -36,6 +36,31 @@ export function fromInputValue(value: string): ISODateTime | undefined {
   return value === '' ? undefined : value.slice(0, ISO_MINUTES_LENGTH);
 }
 
+/** "yyyy-aa-gg" uzunluğu */
+const DATE_LENGTH = 10;
+/** Gün başı / gün sonu saatleri: tarih girişinde saat sorulmaz, bu değerler kullanılır. */
+const DAY_START_TIME = 'T00:00';
+const DAY_END_TIME = 'T23:59';
+
+/** ISO → yalnızca tarih "gg.aa.yyyy" (saat gösterilmez). Boşsa boş metin. */
+export function formatDay(value?: ISODateTime): string {
+  return formatDateTime(value).slice(0, DATE_LENGTH);
+}
+
+/** ISO → <input type="date"> değeri "yyyy-aa-gg". */
+export function toDateInputValue(value?: ISODateTime): string {
+  return value ? value.slice(0, DATE_LENGTH) : '';
+}
+
+/**
+ * <input type="date"> değeri → ISO. Başlangıç gün başına (00:00), bitiş gün sonuna (23:59)
+ * yerleştirilir; böylece bitiş günü süreye dahil olur ve o gün bitmeden gecikme sayılmaz.
+ */
+export function fromDateInputValue(value: string, edge: 'start' | 'end'): ISODateTime | undefined {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return undefined;
+  return value + (edge === 'start' ? DAY_START_TIME : DAY_END_TIME);
+}
+
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /** Bugünün tarihi "yyyy-aa-gg" (yerel zaman), dosya adları için. */

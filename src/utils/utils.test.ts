@@ -67,3 +67,14 @@ describe('number', () => {
     expect(parseDecimal('1,2,3')).toBeNull();
   });
 });
+
+describe('saatsiz tarih girişi', () => {
+  it('başlangıç gün başına, bitiş gün sonuna yerleşir; gösterimde saat yok', async () => {
+    const { formatDay, fromDateInputValue, toDateInputValue } = await import('./date');
+    expect(fromDateInputValue('2026-07-24', 'start')).toBe('2026-07-24T00:00');
+    expect(fromDateInputValue('2026-07-24', 'end')).toBe('2026-07-24T23:59');
+    expect(fromDateInputValue('', 'end')).toBeUndefined();
+    expect(toDateInputValue('2026-07-24T08:00')).toBe('2026-07-24');
+    expect(formatDay('2026-07-24T23:59')).toBe('24.07.2026');
+  });
+});

@@ -14,7 +14,7 @@ import {
   type TimelineRange,
 } from '../../domain/timeline';
 import type { GanttZoom, ISODateTime, Project } from '../../types';
-import { formatDateTime } from '../../utils/date';
+import { formatDay } from '../../utils/date';
 import { formatPercent } from '../../utils/number';
 import { GanttBar } from './GanttBar';
 import { GanttHeader, type Marker } from './GanttHeader';
@@ -29,8 +29,7 @@ interface GanttChartProps {
   onScroll: UIEventHandler<HTMLDivElement>;
 }
 
-const periodText = (start?: string, end?: string) =>
-  `${formatDateTime(start)} – ${formatDateTime(end)}`;
+const periodText = (start?: string, end?: string) => `${formatDay(start)} – ${formatDay(end)}`;
 
 function RowBar({
   row,
@@ -97,7 +96,7 @@ export function GanttChart({
       label: '▶ Başlama',
       x: startX,
       kind: 'project',
-      title: `İşe başlama: ${formatDateTime(project.start)}`,
+      title: `İşe başlama: ${formatDay(project.start)}`,
     });
   }
   if (endX !== null) {
@@ -106,7 +105,7 @@ export function GanttChart({
       label: '■ Bitim',
       x: endX,
       kind: 'project',
-      title: `İş bitimi: ${formatDateTime(project.end)}`,
+      title: `İş bitimi: ${formatDay(project.end)}`,
     });
   }
   const todayVisible = todayX !== null && todayX >= 0 && todayX <= width;
@@ -116,7 +115,7 @@ export function GanttChart({
       label: 'Bugün',
       x: todayX,
       kind: 'today',
-      title: `Bugün: ${formatDateTime(now)}`,
+      title: `Bugün: ${formatDay(now)}`,
     });
   }
 

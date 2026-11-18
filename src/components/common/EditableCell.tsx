@@ -15,7 +15,7 @@ interface EditableCellProps {
   onCommit: CommitHandler;
   /** Ekran okuyucu ve ipucu için alan adı */
   label: string;
-  inputType?: 'text' | 'date' | 'datetime-local' | 'url';
+  inputType?: 'text' | 'date' | 'url';
   /** Sayısal girişte mobil klavye için */
   inputMode?: 'decimal' | 'text';
   placeholder?: string;

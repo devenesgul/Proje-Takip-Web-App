@@ -9,7 +9,8 @@ import type {
   Item,
   SelectOption,
 } from '../types';
-import { parseDecimal } from '../utils/number';
+import { formatDate } from '../utils/date';
+import { formatNumber, parseDecimal } from '../utils/number';
 
 export const COLUMN_TYPE_LABELS: Record<ColumnType, string> = {
   text: 'Metin',
@@ -170,4 +171,17 @@ export function safeHref(value: string): string | null {
   } catch {
     return null;
   }
+}
+
+/** Özel sütun değerinin düz metin gösterimi (yazdırma çıktısı için). */
+export function formatCustomValue(
+  column: ColumnDefinition,
+  value: CustomValue | undefined,
+): string {
+  if (value === undefined || value === null) return '';
+  if (column.type === 'checkbox') return value === true ? '✓' : '';
+  if (typeof value === 'number') return formatNumber(value);
+  if (typeof value === 'boolean') return value ? 'Evet' : 'Hayır';
+  if (column.type === 'date') return formatDate(value);
+  return value;
 }

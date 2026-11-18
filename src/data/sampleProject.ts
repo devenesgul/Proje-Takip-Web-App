@@ -286,6 +286,25 @@ export const sampleProject: Project = {
     { date: '2026-09-25T17:00', overallProgress: 6 },
     { date: '2026-10-30T17:00', overallProgress: 11.3 },
   ],
+  trackers: [
+    {
+      id: 'tr-formwork',
+      name: 'Döküm takibi',
+      responsible: 'Kalıpçı',
+      eventLabel: 'Döküm',
+      start: '2026-07-24',
+      intervalDays: 15,
+      penaltyMode: 'perDay',
+      penaltyAmount: 5000,
+      events: [
+        { id: 'tr-formwork-e1', date: '2026-08-05', note: 'Temel betonu' },
+        { id: 'tr-formwork-e2', date: '2026-08-19', note: 'Bodrum perde' },
+        { id: 'tr-formwork-e3', date: '2026-09-08', note: 'Bodrum tavan' },
+        { id: 'tr-formwork-e4', date: '2026-09-21', note: 'Zemin kat tavan' },
+      ],
+      note: 'Sözleşme gereği işe başlamadan itibaren en geç 15 günde 1 döküm.',
+    },
+  ],
   settings: {
     theme: 'system',
     ganttZoom: 'week',

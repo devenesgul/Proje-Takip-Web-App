@@ -6,10 +6,11 @@ import { countMatching, type QuickFilter } from '../../domain/filters';
 import { checkWeights, overallProgress } from '../../domain/progress';
 import { remainingDays, remainingDaysLabel } from '../../domain/schedule';
 import { deviation } from '../../domain/scurve';
+import { formatMoney, trackersSummary } from '../../domain/trackers';
 import { useProjectStore } from '../../store/projectStore';
 import { useUiStore } from '../../store/uiStore';
 import type { ISODateTime } from '../../types';
-import { formatDateTime } from '../../utils/date';
+import { formatDay } from '../../utils/date';
 import { formatPercent, formatSigned } from '../../utils/number';
 import { ProgressBar } from '../common/ProgressBar';
 
@@ -22,10 +23,12 @@ interface CardProps {
   tone?: Tone;
   /** Verilirse kart tıklanabilir ve bu filtreyi uygular */
   filter?: QuickFilter;
+  /** Verilirse kart tıklanabilir ve bu işlemi yapar */
+  onClick?: () => void;
   children?: ReactNode;
 }
 
-function Card({ label, value, detail, tone = 'neutral', filter, children }: CardProps) {
+function Card({ label, value, detail, tone = 'neutral', filter, onClick, children }: CardProps) {
   const active = useUiStore((state) => state.filter);
   const setFilter = useUiStore((state) => state.setFilter);
   const body = (
@@ -36,6 +39,13 @@ function Card({ label, value, detail, tone = 'neutral', filter, children }: Card
       {detail && <span className="card-detail">{detail}</span>}
     </>
   );
+  if (onClick) {
+    return (
+      <button type="button" className={`card card-button tone-${tone}`} onClick={onClick}>
+        {body}
+      </button>
+    );
+  }
   if (!filter) return <div className={`card tone-${tone}`}>{body}</div>;
   const pressed = active === filter;
   return (
@@ -71,6 +81,8 @@ export function SummaryCards({ now }: { now: ISODateTime }) {
   const delayed = countMatching(groups, 'delayed', now);
   const thisWeek = countMatching(groups, 'thisWeek', now);
   const gap = deviation(groups, now);
+  const setTrackersOpen = useUiStore((state) => state.setTrackersOpen);
+  const trackers = trackersSummary(project.trackers, now);
 
   return (
     <section className="summary-cards" aria-label="Proje özeti">
@@ -85,7 +97,7 @@ export function SummaryCards({ now }: { now: ISODateTime }) {
         label="Kalan süre"
         value={days === null ? '—' : remainingDaysLabel(days)}
         tone={days !== null && days < 0 ? 'bad' : 'neutral'}
-        detail={`Bitiş: ${formatDateTime(project.end).slice(0, 10)}`}
+        detail={`Bitiş: ${formatDay(project.end)}`}
       />
       <Card
         label="Geciken iş"
@@ -105,6 +117,23 @@ export function SummaryCards({ now }: { now: ISODateTime }) {
         value={`${gap > 0 ? '▲' : gap < 0 ? '▼' : '●'} ${formatSigned(gap)} puan`}
         tone={gap < 0 ? 'bad' : gap > 0 ? 'good' : 'neutral'}
         detail={gap > 0 ? 'Plandan öndeyiz' : gap < 0 ? 'Plandan gerideyiz' : 'Planla aynı'}
+      />
+      <Card
+        label="Periyot takibi"
+        value={
+          project.trackers.length === 0
+            ? '—'
+            : trackers.overdue > 0
+              ? `⚠ ${trackers.overdue} aşımda`
+              : '✔ Zamanında'
+        }
+        tone={trackers.overdue > 0 ? 'bad' : project.trackers.length > 0 ? 'good' : 'neutral'}
+        detail={
+          project.trackers.length === 0
+            ? 'Takip eklemek için tıklayın'
+            : `Toplam kesinti: ${formatMoney(trackers.totalPenalty)}`
+        }
+        onClick={() => setTrackersOpen(true)}
       />
     </section>
   );

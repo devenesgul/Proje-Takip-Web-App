@@ -3,7 +3,7 @@
 import type { CheckResult } from '../../domain/validation';
 import { useProjectStore, type ItemPatch } from '../../store/projectStore';
 import type { ColumnDefinition, Item } from '../../types';
-import { formatDateTime, fromInputValue, toInputValue } from '../../utils/date';
+import { formatDay, fromDateInputValue, toDateInputValue } from '../../utils/date';
 import { formatNumber, formatPercent, parseDecimal } from '../../utils/number';
 import { EditableCell, type CommitHandler } from '../common/EditableCell';
 import { ProgressBar } from '../common/ProgressBar';
@@ -37,7 +37,7 @@ export function ItemRow({ groupId, item, delayed, columns }: ItemRowProps) {
   const commitPlanned =
     (field: 'start' | 'end'): CommitHandler =>
     (text) =>
-      update({ planned: { [field]: fromInputValue(text) } });
+      update({ planned: { [field]: fromDateInputValue(text, field) } });
 
   const handleRemove = () => {
     if (window.confirm(`"${item.name}" kalemi silinsin mi? Bu işlem geri alınamaz.`)) {
@@ -70,9 +70,9 @@ export function ItemRow({ groupId, item, delayed, columns }: ItemRowProps) {
       <td className="col-date">
         <EditableCell
           label="Planlanan başlangıç"
-          inputType="datetime-local"
-          display={formatDateTime(item.planned.start)}
-          value={toInputValue(item.planned.start)}
+          inputType="date"
+          display={formatDay(item.planned.start)}
+          value={toDateInputValue(item.planned.start)}
           placeholder="tarih yok"
           onCommit={commitPlanned('start')}
         />
@@ -80,9 +80,9 @@ export function ItemRow({ groupId, item, delayed, columns }: ItemRowProps) {
       <td className="col-date">
         <EditableCell
           label="Planlanan bitiş"
-          inputType="datetime-local"
-          display={formatDateTime(item.planned.end)}
-          value={toInputValue(item.planned.end)}
+          inputType="date"
+          display={formatDay(item.planned.end)}
+          value={toDateInputValue(item.planned.end)}
           placeholder="tarih yok"
           onCommit={commitPlanned('end')}
         />

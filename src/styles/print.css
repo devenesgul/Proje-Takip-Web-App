@@ -112,6 +112,11 @@
   width: 17mm;
 }
 
+/* Özel sütunlar (ör. Sorumlu) */
+.print-table th.print-custom {
+  width: 22mm;
+}
+
 .print-table th {
   background: #eeeeee;
   font-weight: 600;
@@ -235,4 +240,36 @@
   text-align: left;
   font-size: 7pt;
   color: #444444;
+}
+
+/* Periyot takibi tablosu */
+.print-trackers {
+  margin-top: 5mm;
+  break-inside: avoid;
+}
+
+.print-trackers h2 {
+  margin: 0 0 1.5mm;
+  font-size: 10pt;
+}
+
+.print-tracker-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.print-tracker-table th,
+.print-tracker-table td {
+  border: 0.5pt solid #999999;
+  padding: 0.6mm 1.2mm;
+  text-align: left;
+}
+
+.print-tracker-table th {
+  background: #eeeeee;
+  font-weight: 600;
+}
+
+.print-tracker-table .num {
+  text-align: right;
 }

@@ -5,6 +5,7 @@ import { sortColumns } from '../domain/columns';
 import { groupProgress, groupWeight, overallProgress, totalWeight } from '../domain/progress';
 import { effectiveStatus, isDelayed, remainingDays, STATUS_LABELS } from '../domain/schedule';
 import { deviation, plannedProgress } from '../domain/scurve';
+import { PENALTY_MODE_LABELS, trackerReport, TRACKER_STATE_LABELS } from '../domain/trackers';
 import type { ColumnDefinition, CustomValue, ISODateTime, Project } from '../types';
 import { dayNumber } from '../utils/date';
 import { exportFileName } from './exportJson';
@@ -84,10 +85,10 @@ function scheduleSheet(project: Project, now: ISODateTime): Sheet {
         group.name,
         item.name,
         item.weight,
-        dateCell(item.planned.start),
-        dateCell(item.planned.end),
-        dateCell(item.actual.start),
-        dateCell(item.actual.end),
+        dateCell(item.planned.start, DATE_FORMAT),
+        dateCell(item.planned.end, DATE_FORMAT),
+        dateCell(item.actual.start, DATE_FORMAT),
+        dateCell(item.actual.end, DATE_FORMAT),
         item.progress,
         isDelayed(item, now) ? STATUS_LABELS.delayed : status,
         item.note ?? null,
@@ -117,8 +118,8 @@ function infoSheet(project: Project, now: ISODateTime): Sheet {
     rows: [
       ['Alan', 'Değer'],
       ['Proje adı', project.name],
-      ['İşe başlama', dateCell(project.start)],
-      ['İş bitimi', dateCell(project.end)],
+      ['İşe başlama', dateCell(project.start, DATE_FORMAT)],
+      ['İş bitimi', dateCell(project.end, DATE_FORMAT)],
       ...project.info.map((field): CellValue[] => [field.key, field.value]),
       ['Rapor tarihi', dateCell(now)],
       ['Genel ilerleme (%)', overallProgress(project.groups)],
@@ -146,9 +147,83 @@ function snapshotSheet(project: Project): Sheet {
   };
 }
 
+function trackerSheet(project: Project, now: ISODateTime): Sheet {
+  return {
+    name: 'Periyot Takibi',
+    rows: [
+      [
+        'Takip',
+        'Sorumlu',
+        'Yapılacak iş',
+        'Periyot (gün)',
+        'Başlangıç',
+        'Bitiş',
+        'Son kayıt',
+        'Sonraki son gün',
+        'Kalan gün',
+        'Durum',
+        'Kayıt sayısı',
+        'Aşım (gün)',
+        'Kaçırılan periyot',
+        'Kesinti şekli',
+        'Birim kesinti (TL)',
+        'Toplam kesinti (TL)',
+      ],
+      ...project.trackers.map((tracker): CellValue[] => {
+        const report = trackerReport(tracker, now);
+        return [
+          tracker.name,
+          tracker.responsible,
+          tracker.eventLabel,
+          tracker.intervalDays,
+          dateCell(tracker.start, DATE_FORMAT),
+          dateCell(tracker.end, DATE_FORMAT),
+          dateCell(report.lastEvent, DATE_FORMAT),
+          dateCell(report.nextDeadline, DATE_FORMAT),
+          report.daysLeft ?? null,
+          TRACKER_STATE_LABELS[report.state],
+          report.eventCount,
+          report.totalLateDays,
+          report.totalMissed,
+          PENALTY_MODE_LABELS[tracker.penaltyMode],
+          tracker.penaltyAmount,
+          report.totalPenalty,
+        ];
+      }),
+    ],
+    widths: [22, 18, 14, 12, 12, 12, 12, 15, 10, 18, 11, 11, 15, 26, 16, 18],
+  };
+}
+
+function penaltySheet(project: Project, now: ISODateTime): Sheet {
+  const rows: CellValue[][] = [
+    ['Takip', 'Sorumlu', 'Son gün', 'Yapıldığı gün', 'Gecikme (gün)', 'Kaçırılan', 'Kesinti (TL)'],
+  ];
+  for (const tracker of project.trackers) {
+    for (const v of trackerReport(tracker, now).violations) {
+      rows.push([
+        tracker.name,
+        tracker.responsible,
+        dateCell(v.deadline, DATE_FORMAT),
+        v.resolvedOn ? dateCell(v.resolvedOn, DATE_FORMAT) : 'Henüz yapılmadı',
+        v.lateDays,
+        v.missedPeriods,
+        v.penalty,
+      ]);
+    }
+  }
+  return { name: 'Kesintiler', rows, widths: [22, 18, 12, 16, 14, 11, 14] };
+}
+
 /** Excel'e yazılacak sayfalar (saf; test edilir). */
 export function buildSheets(project: Project, now: ISODateTime): Sheet[] {
-  return [scheduleSheet(project, now), infoSheet(project, now), snapshotSheet(project)];
+  return [
+    scheduleSheet(project, now),
+    infoSheet(project, now),
+    snapshotSheet(project),
+    trackerSheet(project, now),
+    penaltySheet(project, now),
+  ];
 }
 
 /** JSON yedeğiyle aynı ad, .xlsx uzantılı: "kentsel-donusum-2026-10-30.xlsx" */

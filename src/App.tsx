@@ -12,12 +12,15 @@ import { TopBar } from './components/layout/TopBar';
 import { Workspace } from './components/layout/Workspace';
 import { PrintView } from './components/print/PrintView';
 import { usePrinting } from './components/print/usePrinting';
+import { TrackersModal } from './components/trackers/TrackersModal';
 import { useProjectStore } from './store/projectStore';
 import { useUiStore } from './store/uiStore';
 
 function App() {
   const project = useProjectStore((state) => state.project);
   const mobileTab = useUiStore((state) => state.mobileTab);
+  const trackersOpen = useUiStore((state) => state.trackersOpen);
+  const setTrackersOpen = useUiStore((state) => state.setTrackersOpen);
   const now = useNow();
   const printing = usePrinting();
   useUndoShortcuts();
@@ -42,6 +45,7 @@ function App() {
           <SCurvePanel now={now} />
         </main>
       </div>
+      {trackersOpen && <TrackersModal now={now} onClose={() => setTrackersOpen(false)} />}
       {printing && <PrintView project={project} now={now} />}
     </>
   );

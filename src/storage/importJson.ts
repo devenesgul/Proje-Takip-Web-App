@@ -12,6 +12,9 @@ import {
   type Group,
   type InfoField,
   type Item,
+  type PenaltyMode,
+  type Tracker,
+  type TrackerEvent,
   type Project,
   type ProgressSnapshot,
   type Status,
@@ -26,7 +29,10 @@ type RawObject = Record<string, unknown>;
  * Şema taşıma adımları: anahtar = kaynak sürüm, değer = bir sonraki sürüme çeviren fonksiyon.
  * Şema değiştiğinde CURRENT_SCHEMA_VERSION artırılır ve buraya bir adım eklenir.
  */
-const MIGRATIONS: Record<number, (data: RawObject) => RawObject> = {};
+const MIGRATIONS: Record<number, (data: RawObject) => RawObject> = {
+  // 1 → 2: periyot takipleri (trackers) eklendi.
+  1: (data) => ({ ...data, trackers: data.trackers ?? [], schemaVersion: 2 }),
+};
 
 const STATUSES: readonly Status[] = ['notStarted', 'inProgress', 'done', 'delayed', 'onHold'];
 const COLUMN_TYPES: readonly ColumnType[] = [
@@ -37,6 +43,8 @@ const COLUMN_TYPES: readonly ColumnType[] = [
   'checkbox',
   'link',
 ];
+const PENALTY_MODES: readonly PenaltyMode[] = ['perDay', 'perPeriod'];
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
 const THEMES: readonly Theme[] = ['light', 'dark', 'system'];
 const ZOOMS: readonly GanttZoom[] = ['day', 'week', 'month'];
 
@@ -170,6 +178,42 @@ function readSnapshot(value: unknown, path: string): ProgressSnapshot {
   };
 }
 
+function dateOnly(value: unknown, path: string): string {
+  const text = str(value, path);
+  return DATE_ONLY.test(text) ? text : fail(path, 'yyyy-aa-gg biçiminde tarih');
+}
+
+function readTrackerEvent(value: unknown, path: string): TrackerEvent {
+  const raw = obj(value, path);
+  return {
+    id: str(raw.id, `${path}.id`),
+    date: dateOnly(raw.date, `${path}.date`),
+    note: optStr(raw.note, `${path}.note`),
+  };
+}
+
+function readTracker(value: unknown, path: string): Tracker {
+  const raw = obj(value, path);
+  const intervalDays = num(raw.intervalDays, `${path}.intervalDays`);
+  if (!Number.isInteger(intervalDays) || intervalDays < 1)
+    fail(`${path}.intervalDays`, 'pozitif tam sayı');
+  const penaltyAmount = num(raw.penaltyAmount, `${path}.penaltyAmount`);
+  if (penaltyAmount < 0) fail(`${path}.penaltyAmount`, 'negatif olmayan sayı');
+  return {
+    id: str(raw.id, `${path}.id`),
+    name: str(raw.name, `${path}.name`),
+    responsible: str(raw.responsible, `${path}.responsible`),
+    eventLabel: str(raw.eventLabel, `${path}.eventLabel`),
+    start: dateOnly(raw.start, `${path}.start`),
+    end: raw.end === undefined || raw.end === null ? undefined : dateOnly(raw.end, `${path}.end`),
+    intervalDays,
+    penaltyMode: oneOf(raw.penaltyMode, `${path}.penaltyMode`, PENALTY_MODES),
+    penaltyAmount,
+    events: arr(raw.events, `${path}.events`, readTrackerEvent),
+    note: optStr(raw.note, `${path}.note`),
+  };
+}
+
 function readProjectFields(raw: RawObject): Project {
   const settings = obj(raw.settings, 'settings');
   const project: Project = {
@@ -182,6 +226,7 @@ function readProjectFields(raw: RawObject): Project {
     columns: arr(raw.columns, 'columns', readColumn),
     groups: arr(raw.groups, 'groups', readGroup),
     progressSnapshots: arr(raw.progressSnapshots, 'progressSnapshots', readSnapshot),
+    trackers: arr(raw.trackers, 'trackers', readTracker),
     settings: {
       theme: oneOf(settings.theme, 'settings.theme', THEMES),
       ganttZoom: oneOf(settings.ganttZoom, 'settings.ganttZoom', ZOOMS),

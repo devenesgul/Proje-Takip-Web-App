@@ -147,7 +147,7 @@ describe('exportFileName', () => {
 });
 
 describe('eski yedek uyumluluğu', () => {
-  it('Aşama 1–2 döneminde alınmış yedek (şema 1) değişmeden yüklenir', async () => {
+  it('Aşama 1–2 döneminde alınmış yedek (şema 1) yüklenir, şema 2’ye taşınır', async () => {
     const { default: text } = await import('./__fixtures__/backup-v1.json?raw');
     const result = parseProjectJson(text);
     expect(result.ok).toBe(true);
@@ -160,6 +160,12 @@ describe('eski yedek uyumluluğu', () => {
       'c-text': 'Saha şefi',
       'c-check': true,
     });
-    expect(JSON.parse(projectToJson(result.project))).toEqual(JSON.parse(text));
+    // Taşıma yalnızca boş periyot takibi listesini ekler ve sürümü yükseltir; geri kalan aynı.
+    expect(result.project.trackers).toEqual([]);
+    expect(JSON.parse(projectToJson(result.project))).toEqual({
+      ...JSON.parse(text),
+      trackers: [],
+      schemaVersion: 2,
+    });
   });
 });

@@ -2,9 +2,16 @@
 // Üstte künye, ortada tablo + sayfa genişliğine sığdırılmış aylık Gantt, altta imza bloğu.
 // Yalnızca yazdırma sırasında oluşturulur; filtre ve açık/kapalı gruplardan bağımsız olarak tüm kalemleri basar.
 import type { CSSProperties, ReactNode } from 'react';
+import { formatCustomValue, visibleColumns } from '../../domain/columns';
 import { groupProgress, groupWeight, overallProgress, totalWeight } from '../../domain/progress';
 import { effectiveStatus, remainingDays, remainingDaysLabel } from '../../domain/schedule';
 import { deviation } from '../../domain/scurve';
+import {
+  formatMoney,
+  trackerReport,
+  TRACKER_STATE_LABELS,
+  daysLeftLabel,
+} from '../../domain/trackers';
 import {
   axisHeader,
   barGeometry,
@@ -15,7 +22,7 @@ import {
   type Geometry,
 } from '../../domain/timeline';
 import type { ISODateTime, Project } from '../../types';
-import { formatDateTime } from '../../utils/date';
+import { formatDate, formatDateTime, formatDay } from '../../utils/date';
 import { formatPercent, formatSigned } from '../../utils/number';
 
 /** PDF'teki onay bloğu */
@@ -24,7 +31,7 @@ const SIGNATURE_ROLES = ['Yüklenici', 'İdare', 'Mimar', 'İnşaat Mühendisi',
 const PRINT_ZOOM = 'month';
 const PERCENT = 100;
 
-const dateOnly = (value?: string) => formatDateTime(value).slice(0, 10);
+const dateOnly = formatDay;
 
 interface TimelineProps {
   width: number;
@@ -90,6 +97,9 @@ export function PrintView({ project, now }: { project: Project; now: ISODateTime
   const todayX = xOf(now, range, PRINT_ZOOM);
   const today = todayX !== null && todayX >= 0 && todayX <= width ? todayX : null;
   const pct = (x: number) => `${(x / width) * PERCENT}%`;
+  /** Tabloda görünür özel sütunlar (ör. Sorumlu) çıktıda da basılır. */
+  const columns = visibleColumns(project.columns);
+  const blankColumns = columns.map((c) => <td key={c.id} />);
   const lane = { width, monthLefts, markers, today };
 
   const days = remainingDays(project.end, now);
@@ -143,6 +153,11 @@ export function PrintView({ project, now }: { project: Project; now: ISODateTime
             <th rowSpan={2} className="num">
               Tamaml.
             </th>
+            {columns.map((column) => (
+              <th key={column.id} rowSpan={2} className="print-custom">
+                {column.name}
+              </th>
+            ))}
             <th className="print-timeline print-axis">
               <div className="print-lane">
                 {axis.top.map((s) => (
@@ -185,6 +200,7 @@ export function PrintView({ project, now }: { project: Project; now: ISODateTime
                 <td>{dateOnly(span?.start)}</td>
                 <td>{dateOnly(span?.end)}</td>
                 <td className="num">{formatPercent(groupProgress(group))}</td>
+                {blankColumns}
                 <TimelineCell {...lane}>
                   {geometry && (
                     <Bar
@@ -207,6 +223,11 @@ export function PrintView({ project, now }: { project: Project; now: ISODateTime
                     <td>{dateOnly(item.planned.start)}</td>
                     <td>{dateOnly(item.planned.end)}</td>
                     <td className="num">{formatPercent(item.progress)}</td>
+                    {columns.map((column) => (
+                      <td key={column.id} className="print-custom">
+                        {formatCustomValue(column, item.custom[column.id])}
+                      </td>
+                    ))}
                     <TimelineCell {...lane}>
                       {bar && (
                         <Bar
@@ -229,6 +250,7 @@ export function PrintView({ project, now }: { project: Project; now: ISODateTime
             <td />
             <td />
             <td className="num">{formatPercent(overallProgress(project.groups))}</td>
+            {blankColumns}
             <td />
           </tr>
         </tbody>
@@ -237,6 +259,52 @@ export function PrintView({ project, now }: { project: Project; now: ISODateTime
         Çubuk: planlanan süre · koyu dolgu: tamamlanma · kırmızı çizgi: rapor tarihi · kesikli
         çizgi: işe başlama / iş bitimi · kırmızı çubuk: geciken iş
       </p>
+
+      {project.trackers.length > 0 && (
+        <section className="print-trackers">
+          <h2>Periyot takibi</h2>
+          <table className="print-tracker-table">
+            <thead>
+              <tr>
+                <th>Takip</th>
+                <th>Sorumlu</th>
+                <th>Kural</th>
+                <th>Başlangıç</th>
+                <th>Son kayıt</th>
+                <th>Sonraki son gün</th>
+                <th>Durum</th>
+                <th className="num">Aşım (gün)</th>
+                <th className="num">Kaçırılan</th>
+                <th className="num">Kesinti</th>
+              </tr>
+            </thead>
+            <tbody>
+              {project.trackers.map((tracker) => {
+                const report = trackerReport(tracker, now);
+                return (
+                  <tr key={tracker.id}>
+                    <td>{tracker.name}</td>
+                    <td>{tracker.responsible}</td>
+                    <td>
+                      {tracker.intervalDays} günde 1 {tracker.eventLabel.toLocaleLowerCase('tr')}
+                    </td>
+                    <td>{formatDate(tracker.start)}</td>
+                    <td>{report.lastEvent ? formatDate(report.lastEvent) : '—'}</td>
+                    <td>
+                      {report.nextDeadline ? formatDate(report.nextDeadline) : '—'}
+                      {report.daysLeft !== undefined && ` (${daysLeftLabel(report.daysLeft)})`}
+                    </td>
+                    <td>{TRACKER_STATE_LABELS[report.state]}</td>
+                    <td className="num">{report.totalLateDays}</td>
+                    <td className="num">{report.totalMissed}</td>
+                    <td className="num">{formatMoney(report.totalPenalty)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+      )}
 
       <section className="print-signatures">
         {SIGNATURE_ROLES.map((role) => (

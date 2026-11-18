@@ -17,13 +17,27 @@ describe('toExcelSerial', () => {
 });
 
 describe('buildSheets', () => {
-  const [schedule, info, snapshots] = buildSheets(sampleProject, NOW);
+  const [schedule, info, snapshots, trackers, penalties] = buildSheets(sampleProject, NOW);
 
-  it('üç sayfa üretir', () => {
-    expect([schedule.name, info.name, snapshots.name]).toEqual([
+  it('beş sayfa üretir', () => {
+    expect(buildSheets(sampleProject, NOW).map((s) => s.name)).toEqual([
       'İş Programı',
       'Künye',
       'İlerleme Kayıtları',
+      'Periyot Takibi',
+      'Kesintiler',
+    ]);
+  });
+
+  it('periyot takibi ve kesinti sayfaları', () => {
+    // Örnek: 24.07 başlangıç, 15 günde 1, son döküm 21.09 → son gün 06.10, 30.10'da 24 gün aşım.
+    expect(trackers.rows).toHaveLength(2);
+    expect(trackers.rows[1].slice(0, 2)).toEqual(['Döküm takibi', 'Kalıpçı']);
+    expect(trackers.widths).toHaveLength(trackers.rows[0].length);
+    // 19.08 → 08.09 arası 20 gün (5 gün aşım) + 21.09'dan bugüne süren 24 gün aşım
+    expect(penalties.rows.slice(1).map((r) => [r[3], r[4], r[6]])).toEqual([
+      [expect.objectContaining({ format: 'dd.mm.yyyy' }), 5, 25000],
+      ['Henüz yapılmadı', 24, 120000],
     ]);
   });
 

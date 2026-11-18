@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { checkDateRange } from '../../domain/validation';
 import { useProjectStore } from '../../store/projectStore';
-import { fromInputValue, toInputValue } from '../../utils/date';
+import { fromDateInputValue, toDateInputValue } from '../../utils/date';
 import { newId } from '../../utils/id';
 import { Modal } from '../common/Modal';
 
@@ -23,8 +23,8 @@ export function ProjectInfoModal({ onClose }: ProjectInfoModalProps) {
   const setInfo = useProjectStore((state) => state.setInfo);
 
   const [name, setName] = useState(project.name);
-  const [start, setStart] = useState(toInputValue(project.start));
-  const [end, setEnd] = useState(toInputValue(project.end));
+  const [start, setStart] = useState(toDateInputValue(project.start));
+  const [end, setEnd] = useState(toDateInputValue(project.end));
   const [fields, setFields] = useState<DraftField[]>(() =>
     project.info.map((field) => ({ id: newId(), ...field })),
   );
@@ -34,8 +34,8 @@ export function ProjectInfoModal({ onClose }: ProjectInfoModalProps) {
     setFields((list) => list.map((field) => (field.id === id ? { ...field, ...patch } : field)));
 
   const save = () => {
-    const startIso = fromInputValue(start);
-    const endIso = fromInputValue(end);
+    const startIso = fromDateInputValue(start, 'start');
+    const endIso = fromDateInputValue(end, 'end');
     if (name.trim() === '') return setError('Proje adı boş olamaz');
     if (!startIso || !endIso) return setError('Proje başlangıç ve bitiş tarihi gerekli');
     const range = checkDateRange({ start: startIso, end: endIso });
@@ -77,11 +77,11 @@ export function ProjectInfoModal({ onClose }: ProjectInfoModalProps) {
         </label>
         <label>
           İşe başlama
-          <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} />
+          <input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
         </label>
         <label>
           İş bitimi
-          <input type="datetime-local" value={end} onChange={(e) => setEnd(e.target.value)} />
+          <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
         </label>
       </div>
 

@@ -30,6 +30,7 @@ export function TopBar() {
   const canUndo = useProjectStore((state) => state.past.length > 0);
   const canRedo = useProjectStore((state) => state.future.length > 0);
   const saveStatus = useUiStore((state) => state.saveStatus);
+  const setTrackersOpen = useUiStore((state) => state.setTrackersOpen);
   const [infoOpen, setInfoOpen] = useState(false);
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -85,6 +86,9 @@ export function TopBar() {
             </button>
             <button type="button" className="button" onClick={() => setColumnsOpen(true)}>
               Sütunlar
+            </button>
+            <button type="button" className="button" onClick={() => setTrackersOpen(true)}>
+              Periyot takibi
             </button>
             <BackupButtons />
             <select

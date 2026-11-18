@@ -6,9 +6,11 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** Ek sınıf (ör. geniş pencere için "modal-wide") */
+  className?: string;
 }
 
-export function Modal({ title, onClose, children, footer }: ModalProps) {
+export function Modal({ title, onClose, children, footer, className = '' }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export function Modal({ title, onClose, children, footer }: ModalProps) {
   return (
     <dialog
       ref={dialogRef}
-      className="modal"
+      className={`modal ${className}`}
       aria-labelledby="modal-title"
       onCancel={(event) => {
         event.preventDefault();

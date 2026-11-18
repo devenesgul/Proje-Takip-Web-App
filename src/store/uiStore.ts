@@ -19,6 +19,9 @@ interface UiState {
   filter: QuickFilter;
   sCurveOpen: boolean;
   mobileTab: MobileTab;
+  /** Periyot takibi penceresi açık mı */
+  trackersOpen: boolean;
+  setTrackersOpen: (open: boolean) => void;
   setMobileTab: (tab: MobileTab) => void;
   setFilter: (filter: QuickFilter) => void;
   toggleSCurve: () => void;
@@ -33,6 +36,8 @@ export const useUiStore = create<UiState>()((set) => ({
   filter: 'all',
   sCurveOpen: true,
   mobileTab: 'panel',
+  trackersOpen: false,
+  setTrackersOpen: (trackersOpen) => set({ trackersOpen }),
   setMobileTab: (mobileTab) => set({ mobileTab }),
   setFilter: (filter) => set({ filter }),
   toggleSCurve: () => set((state) => ({ sCurveOpen: !state.sCurveOpen })),

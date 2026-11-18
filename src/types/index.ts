@@ -5,7 +5,7 @@
 export type ISODateTime = string;
 
 /** Şema sürümü: içe aktarımda veri taşıma (migration) için. */
-export const CURRENT_SCHEMA_VERSION = 1;
+export const CURRENT_SCHEMA_VERSION = 2;
 
 /** Durum: baslamadi | devam | bitti | gecikti | beklemede */
 export type Status = 'notStarted' | 'inProgress' | 'done' | 'delayed' | 'onHold';
@@ -96,6 +96,46 @@ export interface ProjectSettings {
   ganttZoom: GanttZoom;
 }
 
+/**
+ * Periyot takibinde kesinti hesabı:
+ * perDay = süre aşımında geçen her gün için, perPeriod = kaçırılan her periyot için.
+ */
+export type PenaltyMode = 'perDay' | 'perPeriod';
+
+/** Periyot takibinde gerçekleşen bir iş (örn. bir döküm). */
+export interface TrackerEvent {
+  id: string;
+  /** "yyyy-aa-gg" */
+  date: string;
+  note?: string;
+}
+
+/**
+ * Periyot takibi (örn. "Kalıpçı 15 günde 1 döküm yapmalı").
+ * Başlangıçtan veya son kayıttan itibaren `intervalDays` gün içinde yeni kayıt girilmezse
+ * aşım oluşur ve kesinti hesaplanır.
+ */
+export interface Tracker {
+  id: string;
+  /** Takip adı, örn. "Döküm takibi" */
+  name: string;
+  /** Sorumlu kişi/taşeron, örn. "Kalıpçı" */
+  responsible: string;
+  /** Kaydedilen işin adı, örn. "Döküm" */
+  eventLabel: string;
+  /** Takip başlangıcı "yyyy-aa-gg" (işe başlama) */
+  start: string;
+  /** Takip bitişi "yyyy-aa-gg"; boşsa süresiz */
+  end?: string;
+  /** En fazla kaç günde bir yapılmalı */
+  intervalDays: number;
+  penaltyMode: PenaltyMode;
+  /** Gün ya da periyot başına kesinti tutarı (TL) */
+  penaltyAmount: number;
+  events: TrackerEvent[];
+  note?: string;
+}
+
 /** Proje (kök nesne). */
 export interface Project {
   id: string;
@@ -109,6 +149,8 @@ export interface Project {
   columns: ColumnDefinition[];
   groups: Group[];
   progressSnapshots: ProgressSnapshot[];
+  /** Periyot takipleri (örn. kalıpçı döküm takibi) */
+  trackers: Tracker[];
   settings: ProjectSettings;
   /** Şema sürümü */
   schemaVersion: number;

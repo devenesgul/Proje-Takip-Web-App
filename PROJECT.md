@@ -221,7 +221,7 @@ Durum **otomatik önerilir** (yüzdeden ve tarihten), kullanıcı elle değişti
 
 | # | Özellik | Öncelik |
 |---|---|---|
-| 11 | Başlangıç/bitiş için **tarih + saat** | P0 |
+| 11 | Başlangıç/bitiş için **tarih** (saat kaldırıldı: başlangıç 00:00, bitiş 23:59 saklanır) | P0 |
 | 12 | Her kaleme **not** alanı (uzun metin) | P0 |
 | 13 | **Özel sütun ekleme/silme/yeniden adlandırma/sıralama/gizleme** | P0 |
 | 14 | Özel sütun tipleri: metin, sayı, tarih, seçenek listesi, onay kutusu, bağlantı | P1 |
@@ -265,6 +265,7 @@ Durum **otomatik önerilir** (yüzdeden ve tarihten), kullanıcı elle değişti
 | 37 | PWA (ana ekrana ekle, çevrimdışı) | P2 |
 | 38 | Bulut senkron (Supabase/Firebase ücretsiz katman) | P3 |
 | 39 | Hatırlatma/bildirim | P3 |
+| 43 | **Periyot takibi:** "X günde 1 iş" kuralı (ör. kalıpçı 15 günde 1 döküm), aşım ve kesinti hesabı | P1 |
 | 40 | Fotoğraf/dosya ekleme | P3 |
 | 41 | Değişiklik geçmişi (kim neyi ne zaman değiştirdi) | P3 |
 | 42 | Salt okunur paylaşım linki | P3 |
@@ -901,6 +902,7 @@ Aşama 0'da cevaplanacak ve buraya işlenecek.
 | 30.10.2026 | Aşama 3 (kısmi): sütun yöneticisi (ekle/sil/yeniden adlandır/tip değiştir/sırala/gizle), 6 hücre tipi, seçim seçenekleri, güvenli bağlantı, veri kaybı uyarıları; şema değişmedi (migration gerekmedi, eski yedek testi eklendi) |
 | 30.10.2026 | Aşama 4 (kısmi): scurve/filters domain + testler, özet kartlar (sapma ±), hızlı filtreler, S-eğrisi (SVG, Recharts yerine), günlük ilerleme kaydı, geri al/yinele + kısayollar |
 | 30.10.2026 | Aşama 5 (kısmi): mobil sekmeli düzen + menü, yazdırma/PDF (künye, sığdırılmış Gantt, imza bloğu), Excel (SheetJS 0.20.3, CDN'den, dinamik yükleme), PWA (manifest, ikonlar, elle service worker), GitHub Pages iş akışı, README |
+| 18.11.2026 | Yazdırma çıktısına görünür özel sütunlar (Sorumlu vb.) eklendi; tarih girişlerinden saat kaldırıldı; **periyot takibi** (domain/trackers.ts + testler, takip penceresi, özet kart, yazdırma ve Excel sayfaları). Şema 2: `trackers` alanı, 1→2 taşıması eklendi |
 
 ---
 

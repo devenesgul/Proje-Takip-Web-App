@@ -19,6 +19,8 @@ import type {
 } from '../types';
 import * as columns from './columnActions';
 import type { ColumnPatch } from './columnActions';
+import * as trackers from './trackerActions';
+import type { TrackerDraft } from '../domain/trackers';
 import { toIso } from '../utils/date';
 import { newId } from '../utils/id';
 import { keepViewState, pushHistory, recordProgress } from './history';
@@ -88,6 +90,13 @@ export interface ProjectState {
   setOptionColor: (columnId: string, value: string, color: string) => void;
   removeOption: (columnId: string, value: string) => void;
   setCustomValue: (groupId: string, itemId: string, columnId: string, value: CustomValue) => void;
+
+  /** Periyot takipleri (örn. kalıpçı döküm takibi); geçersiz girişte hata mesajı döner. */
+  addTracker: (draft: TrackerDraft) => CheckResult;
+  updateTracker: (trackerId: string, draft: TrackerDraft) => CheckResult;
+  removeTracker: (trackerId: string) => void;
+  addTrackerEvent: (trackerId: string, date: string, note: string) => CheckResult;
+  removeTrackerEvent: (trackerId: string, eventId: string) => void;
 }
 
 /** Dizideki `order` alanlarını dizi sırasıyla eşitler. */
@@ -307,5 +316,25 @@ export const useProjectStore = create<ProjectState>()((set, get) => {
       commit((project) => columns.removeOption(project, columnId, value)),
     setCustomValue: (groupId, itemId, columnId, value) =>
       commit((project) => columns.setCustomValue(project, groupId, itemId, columnId, value)),
+
+    addTracker: (draft) => {
+      const result = trackers.addTracker(get().project, newId(), draft);
+      if (result.check.ok) commit(() => result.project);
+      return result.check;
+    },
+    updateTracker: (trackerId, draft) => {
+      const result = trackers.updateTracker(get().project, trackerId, draft);
+      if (result.check.ok) commit(() => result.project);
+      return result.check;
+    },
+    removeTracker: (trackerId) => commit((project) => trackers.removeTracker(project, trackerId)),
+    addTrackerEvent: (trackerId, date, note) => {
+      const now = toIso(new Date());
+      const result = trackers.addTrackerEvent(get().project, trackerId, newId(), date, note, now);
+      if (result.check.ok) commit(() => result.project);
+      return result.check;
+    },
+    removeTrackerEvent: (trackerId, eventId) =>
+      commit((project) => trackers.removeTrackerEvent(project, trackerId, eventId)),
   };
 });
